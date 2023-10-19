@@ -11,8 +11,10 @@ else
     real_user=$(whoami)
 fi
 
-echo "\n Welcome to the pmap shairport-sync AirPlay 2 installation script\n"
+echo "\n Welcome to the pmap installation script\n"
 echo " Usage of this script is at your own risk\n"
+echo " The following will be installed:"
+echo " * shairport-sync with AirPlay 2 enabled"
 echo " Script will reboot Pi once completed\n"
 echo " To stop it from running, press ctrl+c within the next 30 seconds\n"
 
@@ -22,6 +24,9 @@ echo "\n**** Running apt-get update and upgrade ****\n"
 
 apt update
 apt upgrade -y
+
+# BEGIN shairport-sync installation
+# Install Steps have been replicated from -> https://github.com/mikebrady/shairport-sync/blob/master/BUILD.md
 
 echo "\n**** Installing shairport-sync ****\n"
 
@@ -64,7 +69,10 @@ echo "\n* Enabling shairport-sync as a service *\n"
 systemctl enable shairport-sync
 
 echo "\n**** Installation of shairport-sync completed ****\n"
-sleep 1
+
+# END shairport-sync installation
+
+
 echo "\n* Rebooting in 30 seconds *\n"
 sleep 30
 
