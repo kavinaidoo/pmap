@@ -6,10 +6,10 @@ import time
 
 # imports used to interact with screen
 import sys
-from PIL import Image
-from PIL import ImageDraw
-from PIL import ImageFont
-import ST7789
+from PIL import Image       # type: ignore
+from PIL import ImageDraw   # type: ignore
+from PIL import ImageFont   # type: ignore
+import ST7789               # type: ignore
 
 
 # initialize INA219
@@ -54,6 +54,7 @@ def draw_rotated_text(image, text, position, angle, font, fill=(255, 255, 255)):
 
 while True:
 
+    # Getting Battery Values
     bus_voltage = ina219.getBusVoltage_V()             # voltage on V- (load side)
     shunt_voltage = ina219.getShuntVoltage_mV() / 1000 # voltage between V+ and V- across the shunt
     current = ina219.getCurrent_mA()                   # current in mA
@@ -77,8 +78,8 @@ while True:
     print(perc)
     print("")
 
-    time.sleep(2)
-
+    
+    # Display Battery values
  
     # Clear the display to a red background.
     # Can pass any tuple of red, green, blue values (from 0 to 255 each).
@@ -107,3 +108,6 @@ while True:
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
     disp.display(img)
+
+
+    time.sleep(2)

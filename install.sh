@@ -16,6 +16,7 @@ echo " Usage of this script is at your own risk\n"
 echo " Designed for RPiOS Lite (32-bit Bookworm) on Pi Zero 2 \n"
 echo " The following will be installed:"
 echo " * shairport-sync with AirPlay 2 enabled\n"
+echo " * pmap with basic functionality\n"
 echo " Script will reboot Pi once completed\n"
 echo " To stop it from running, press ctrl+c within the next 30 seconds\n"
 
