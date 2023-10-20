@@ -1,7 +1,7 @@
 # INA219.py from Waveshare UPS HAT (C) documentation -> https://www.waveshare.com/wiki/UPS_HAT_(C)
 # Retrieved from https://files.waveshare.com/upload/4/40/UPS_HAT_C.7z on 06/10/2023
 
-import smbus
+import smbus # type: ignore
 import time
 
 # Config Register (R/W)
