@@ -15,7 +15,7 @@ echo "\n Welcome to the pmap installation script\n"
 echo " Usage of this script is at your own risk\n"
 echo " Designed for RPiOS Lite (32-bit Bookworm) on Pi Zero 2 \n"
 echo " The following will be installed:"
-echo " * shairport-sync with AirPlay 2 enabled"
+echo " * shairport-sync with AirPlay 2 enabled\n"
 echo " Script will reboot Pi once completed\n"
 echo " To stop it from running, press ctrl+c within the next 30 seconds\n"
 
@@ -26,7 +26,7 @@ echo "\n**** Running apt-get update and upgrade ****\n"
 apt update
 apt upgrade -y
 
-# BEGIN shairport-sync installation
+# BEGIN shairport-sync installation ****************************************************
 # Install Steps have been replicated from -> https://github.com/mikebrady/shairport-sync/blob/master/BUILD.md
 
 echo "\n**** Installing shairport-sync ****\n"
@@ -71,8 +71,30 @@ systemctl enable shairport-sync
 
 echo "\n**** Installation of shairport-sync completed ****\n"
 
-# END shairport-sync installation
+# END shairport-sync installation ****************************************************
 
+# BEGIN pmap installation ****************************************************
+
+echo "\n**** Installing dependencies and downloading pmap ****\n"
+
+# required for INA219.py
+apt-get -y install python3-smbus
+# required for st7789
+apt-get -y install python3-rpi.gpio python3-spidev python3-pip python3-pil python3-numpy
+# required for pmap.py
+
+cd /home/$real_user/
+mkdir pmap
+cd pmap
+
+pip3 install st7789 --break-system-packages
+
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/INA219.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.py
+
+echo "\n**** installating dependencies and downloading pmap completed ****\n"
+
+# END pmap installation ****************************************************
 
 echo "\n* Rebooting in 30 seconds *\n"
 sleep 30
