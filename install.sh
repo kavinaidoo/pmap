@@ -13,6 +13,7 @@ fi
 
 echo "\n Welcome to the pmap installation script\n"
 echo " Usage of this script is at your own risk\n"
+echo " Designed for RPiOS Lite (32-bit Bookworm) on Pi Zero 2 \n"
 echo " The following will be installed:"
 echo " * shairport-sync with AirPlay 2 enabled"
 echo " Script will reboot Pi once completed\n"

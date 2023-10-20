@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 
 # imports used to interact with UPS HAT
-import INA219
+from INA219 import INA219
 import time
 
 ina219 = INA219(addr=0x43)
