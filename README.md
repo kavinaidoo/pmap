@@ -38,10 +38,9 @@ Battery System
 ---
 
 ### Installation Guide
-1. Setup Hardware and moOde using guide here -> https://kavi.sblmnl.co.za/pidap/
-    * Important: The guides Flash image_2023-09-05-moode-r836-arm64-lite.zip from https://github.com/moode-player/moode/releases/tag/r836prod to your SD card as this ensures compatibility
-2. Flash to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added and SSH is enabled (Click ⚙️ to see these options)
-3. SSH into Pi and run 
+1. Setup Hardware using guide here -> https://kavi.sblmnl.co.za/pmap/
+2. Flash Raspberry Pi OS Lite (32-bit) to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added and SSH is enabled (Click ⚙️ to see these options)
+3. SSH into Pi and run:
 ````
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
 ````
