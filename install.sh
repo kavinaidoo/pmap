@@ -14,6 +14,9 @@ fi
 echo "\n Welcome to the pmap installation script\n"
 echo " Usage of this script is at your own risk\n"
 echo " Designed for RPiOS Lite (32-bit Bookworm) on Pi Zero 2 \n"
+echo " Do not make any changes to config.txt before running this script\n"
+echo " The following will be set up:"
+echo " * I2S, SPI and config.txt/n"
 echo " The following will be installed:"
 echo " * shairport-sync with AirPlay 2 enabled"
 echo " * pmap with basic functionality\n"
@@ -26,6 +29,21 @@ echo "\n**** Running apt-get update and upgrade ****\n"
 
 apt update
 apt upgrade -y
+
+# BEGIN enable i2c and spi and modifying config.txt ****************************************************
+
+echo "\n**** Enabling SPI and I2C using raspi-config ****\n"
+
+raspi-config nonint do_spi 0
+raspi-config nonint do_i2c 0
+
+
+echo "\n**** Adding lines to config.txt to recognize Pirate Audio pHAT ****\n"
+
+echo "dtoverlay=hifiberry-dac" >> /boot/config.txt
+echo "gpio=25=op,dh" >> /boot/config.txt
+
+# END enable i2c and spi and modifying config.txt ****************************************************
 
 # BEGIN shairport-sync installation ****************************************************
 # Install Steps have been replicated from -> https://github.com/mikebrady/shairport-sync/blob/master/BUILD.md
