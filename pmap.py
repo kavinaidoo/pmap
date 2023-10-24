@@ -11,9 +11,15 @@ from PIL import ImageDraw   # type: ignore
 from PIL import ImageFont   # type: ignore
 import ST7789               # type: ignore
 
-# imports used for buttons
+
+# imports used for buttons + temperature sensing
 from gpiozero import Button # type: ignore
+from gpiozero import CPUTemperature # type: ignore
 import os
+
+# global vars
+
+airplay_status_text = ""
 
 # initialize INA219
 ina219 = INA219(addr=0x43)
@@ -31,13 +37,13 @@ disp = ST7789.ST7789(
     offset_top=0
 )
 
-# Initialize display.
+# Initialize display
 disp.begin()
 
 WIDTH = disp.width
 HEIGHT = disp.height
 
-# Initialize buttons
+# Initialize buttons + button functions
 a_but = Button(5)
 b_but = Button(6)
 x_but = Button(16)
@@ -47,10 +53,14 @@ y_but = Button(24)
 def a_pressed():
     os.system('sudo nqptp &')
     os.system('sudo shairport-sync &')
+    global airplay_status_text
+    airplay_status_text = "AirPlay Enabled"
 
 def b_pressed():
     os.system('sudo pkill nqptp')
     os.system('sudo pkill shairport-sync')
+    global airplay_status_text
+    airplay_status_text = "AirPlay Disabled"
 
 def x_pressed():
     os.system('sudo reboot now')
@@ -108,13 +118,17 @@ while True:
     print(perc)
     print("")
 
-    
+    cpu = CPUTemperature()
+
+    cpu_temp = "CPU Temp:     "+str(cpu.temperature)
+
+
     # Display Battery values
  
     # Clear the display to a red background.
     # Can pass any tuple of red, green, blue values (from 0 to 255 each).
     # Get a PIL Draw object to start drawing on the display buffer.
-    img = Image.new('RGB', (WIDTH, HEIGHT), color=(255, 0, 0))
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
 
     draw = ImageDraw.Draw(img)
 
@@ -129,11 +143,11 @@ while True:
     # Write two lines of white text on the buffer, rotated 90 degrees counter clockwise.
     #draw_rotated_text(img, 'Hello World!', (0, 0), 90, font, fill=(255, 255, 255))
     draw_rotated_text(img, lv, (0, 0), 0, font, fill=(255, 255, 255))
-    draw_rotated_text(img, curr, (0, 15), 0, font, fill=(255, 255, 255))
-    draw_rotated_text(img, pow, (0, 30), 0, font, fill=(255, 255, 255))
-    draw_rotated_text(img, perc, (0, 45), 0, font, fill=(255, 255, 255))
-
-    draw_rotated_text(img, 'it works!', (10, HEIGHT - 10), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, curr, (0, 20), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, pow, (0, 40), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, perc, (0, 60), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, cpu_temp, (0, 100), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, airplay_status_text, (0, 140), 0, font, fill=(255, 255, 255))
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
