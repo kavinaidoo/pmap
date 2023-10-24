@@ -11,6 +11,9 @@ from PIL import ImageDraw   # type: ignore
 from PIL import ImageFont   # type: ignore
 import ST7789               # type: ignore
 
+# imports used for buttons
+from gpiozero import Button # type: ignore
+import os
 
 # initialize INA219
 ina219 = INA219(addr=0x43)
@@ -33,6 +36,33 @@ disp.begin()
 
 WIDTH = disp.width
 HEIGHT = disp.height
+
+# Initialize buttons
+a_but = Button(5)
+b_but = Button(6)
+x_but = Button(16)
+y_but = Button(24)
+
+
+def a_pressed():
+    os.system('sudo nqptp &')
+    os.system('sudo shairport-sync &')
+
+def b_pressed():
+    os.system('sudo pkill nqptp')
+    os.system('sudo pkill shairport-sync')
+
+def x_pressed():
+    os.system('sudo reboot now')
+
+def y_pressed():
+    os.system('sudo shutdown now')
+
+
+a_but.when_pressed = a_pressed
+b_but.when_pressed = b_pressed
+x_but.when_pressed = x_pressed
+y_but.when_pressed = y_pressed
 
 
 
