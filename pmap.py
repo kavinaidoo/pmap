@@ -147,7 +147,7 @@ while True:
     draw_rotated_text(img, cpu_temp, (0, 100), 0, font, fill=(255, 255, 255))
     draw_rotated_text(img, airplay_status_text, (0, 160), 0, font, fill=(255, 255, 255))
 
-    draw_rotated_text(img, "\uF240 \uF1BC \uF179 \uF2C7", (0, 120), 0, icons, fill=(255, 255, 255))
+    draw_rotated_text(img, "\uF240 \uF1BC \uE814 \uF2C7", (0, 120), 0, icons, fill=(255, 255, 255))
 
 
     # Write buffer to display hardware, must be called to make things visible on the
