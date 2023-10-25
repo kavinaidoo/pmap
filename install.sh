@@ -103,11 +103,13 @@ apt-get -y install python3-rpi.gpio python3-spidev python3-pip python3-pil pytho
 # required for pmap.py
 apt-get -y install python3-gpiozero
 
+pip3 install st7789 --break-system-packages
+
+sudo -u "$real_user" bash << HereTag #run the following commands as $real_user https://unix.stackexchange.com/a/231986
+
 cd /home/$real_user/
 mkdir pmap
 cd pmap
-
-pip3 install st7789 --break-system-packages
 
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/INA219.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.py
@@ -135,6 +137,10 @@ cd /home/$real_user/pmap/pmap_icons_license_etc
 
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/LICENSE.txt
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/README.txt
+
+# End Here Tag 
+HereTag 
+
 
 echo "\n**** installating dependencies and downloading pmap completed ****\n"
 
