@@ -79,7 +79,7 @@ y_but.when_pressed = y_pressed
 def draw_rotated_text(image, text, position, angle, font, fill=(255, 255, 255)):
     # Get rendered font width and height.
     draw = ImageDraw.Draw(image)
-    box_size = draw.textbbox((0, 0),text, font=font, anchor="lt")
+    box_size = draw.textbbox((0, 0),text, font=font)
     width, height = box_size[2], box_size[3]
     # Create a new image with transparent background to store the text.
     textimage = Image.new('RGBA', (width, height), (0, 0, 0, 0))
@@ -134,7 +134,8 @@ while True:
     draw = ImageDraw.Draw(img)
 
     # Load default font.
-    font = ImageFont.load_default()
+    #font = ImageFont.load_default()
+    font = ImageFont.truetype("Ubuntu-Regular.ttf", 15)
 
     # Define a function to create rotated text.  Unfortunately PIL doesn't have good
     # native support for rotated fonts, but this function can be used to make a
