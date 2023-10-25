@@ -112,6 +112,30 @@ pip3 install st7789 --break-system-packages
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/INA219.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.py
 
+#installating ubuntu font
+
+cd /home/$real_user/pmap
+
+curl -O https://github.com/google/fonts/raw/main/ufl/ubuntu/Ubuntu-Regular.ttf
+
+mkdir ubuntu_font_docs
+cd /home/$real_user/pmap/ubuntu_license_etc
+
+curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/COPYRIGHT.txt
+curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/TRADEMARKS.txt
+curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/UFL.txt
+
+#installating pmap_icons font
+
+cd /home/$real_user/pmap
+
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons.ttf
+mkdir pmap_icons_license_etc
+cd /home/$real_user/pmap/pmap_icons_license_etc
+
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/LICENSE.txt
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/README.txt
+
 echo "\n**** installating dependencies and downloading pmap completed ****\n"
 
 # END pmap installation ****************************************************
