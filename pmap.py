@@ -1,5 +1,9 @@
 #!/usr/bin/env python3
 
+# Credits
+# ST7789-related code based on https://github.com/pimoroni/st7789-python/blob/master/examples/shapes.py
+# INA219-related code based on INA219.py
+
 # imports used to interact with UPS HAT
 from INA219 import INA219
 import time
@@ -15,6 +19,8 @@ import ST7789               # type: ignore
 # imports used for buttons + temperature sensing
 from gpiozero import Button # type: ignore
 from gpiozero import CPUTemperature # type: ignore
+from gpiozero import PWMLED # type: ignore
+
 import os
 
 # global vars
@@ -31,7 +37,7 @@ disp = ST7789.ST7789(
     port=0,
     cs=ST7789.BG_SPI_CS_FRONT,  # BG_SPI_CS_BACK or BG_SPI_CS_FRONT
     dc=9,
-    backlight=13,               # 18 for back BG slot, 19 for front BG slot.
+    #backlight=13,               # 18 for back BG slot, 19 for front BG slot.
     spi_speed_hz=80 * 1000 * 1000,
     offset_left=0,
     offset_top=0
@@ -42,6 +48,10 @@ disp.begin()
 
 WIDTH = disp.width
 HEIGHT = disp.height
+
+# Initialize backlight
+backlight = PWMLED(13)
+backlight.value = 0.1
 
 # Initialize buttons + button functions
 a_but = Button(5)
@@ -68,12 +78,10 @@ def x_pressed():
 def y_pressed():
     os.system('sudo shutdown now')
 
-
 a_but.when_pressed = a_pressed
 b_but.when_pressed = b_pressed
 x_but.when_pressed = x_pressed
 y_but.when_pressed = y_pressed
-
 
 
 def draw_rotated_text(image, text, position, angle, font, fill=(255, 255, 255)):
@@ -113,6 +121,7 @@ while True:
     pow = "Power:         {:6.3f} W".format(power)
     perc = "Percent:       {:3.1f}%".format(p)
 
+    # Print values to terminal
     print(lv)
     print(curr)
     print(pow)
@@ -123,34 +132,20 @@ while True:
 
     cpu_temp = "CPU Temp:     "+str(cpu.temperature)
 
-
-    # Display Battery values
- 
-    # Clear the display to a red background.
-    # Can pass any tuple of red, green, blue values (from 0 to 255 each).
-    # Get a PIL Draw object to start drawing on the display buffer.
+    # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
-
     draw = ImageDraw.Draw(img)
 
-    # Load default font.
-    #font = ImageFont.load_default()
+    # Load Fonts
     font = ImageFont.truetype("Ubuntu-Regular.ttf", 15)
     icons = ImageFont.truetype("pmap_icons.ttf", 30)
 
-    # Define a function to create rotated text.  Unfortunately PIL doesn't have good
-    # native support for rotated fonts, but this function can be used to make a
-    # text image and rotate it so it's easy to paste in the buffer.
-
-    
-    # Write two lines of white text on the buffer, rotated 90 degrees counter clockwise.
-    #draw_rotated_text(img, 'Hello World!', (0, 0), 90, font, fill=(255, 255, 255))
     draw_rotated_text(img, lv, (0, 0), 0, font, fill=(255, 255, 255))
     draw_rotated_text(img, curr, (0, 20), 0, font, fill=(255, 255, 255))
     draw_rotated_text(img, pow, (0, 40), 0, font, fill=(255, 255, 255))
     draw_rotated_text(img, perc, (0, 60), 0, font, fill=(255, 255, 255))
     draw_rotated_text(img, cpu_temp, (0, 100), 0, font, fill=(255, 255, 255))
-    draw_rotated_text(img, airplay_status_text, (0, 140), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, airplay_status_text, (0, 160), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, "\uF240 \uF1BC \uF179 \uF2C7", (0, 120), 0, icons, fill=(255, 255, 255))
 
