@@ -79,7 +79,8 @@ y_but.when_pressed = y_pressed
 def draw_rotated_text(image, text, position, angle, font, fill=(255, 255, 255)):
     # Get rendered font width and height.
     draw = ImageDraw.Draw(image)
-    width, height = draw.textsize(text, font=font)
+    box_size = draw.textbbox((0, 0),text, font=font, anchor="lt")
+    width, height = box_size[2], box_size[3]
     # Create a new image with transparent background to store the text.
     textimage = Image.new('RGBA', (width, height), (0, 0, 0, 0))
     # Render the text.
