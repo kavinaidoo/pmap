@@ -118,7 +118,7 @@ curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.py
 
 cd /home/$real_user/pmap
 
-curl -O https://github.com/google/fonts/raw/main/ufl/ubuntu/Ubuntu-Regular.ttf
+curl -OSL https://github.com/google/fonts/raw/main/ufl/ubuntu/Ubuntu-Regular.ttf
 
 mkdir ubuntu_font_license_etc
 cd /home/$real_user/pmap/ubuntu_font_license_etc
