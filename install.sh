@@ -118,8 +118,8 @@ cd /home/$real_user/pmap
 
 curl -O https://github.com/google/fonts/raw/main/ufl/ubuntu/Ubuntu-Regular.ttf
 
-mkdir ubuntu_font_docs
-cd /home/$real_user/pmap/ubuntu_license_etc
+mkdir ubuntu_font_license_etc
+cd /home/$real_user/pmap/ubuntu_font_license_etc
 
 curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/COPYRIGHT.txt
 curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/TRADEMARKS.txt
