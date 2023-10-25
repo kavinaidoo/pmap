@@ -105,7 +105,7 @@ apt-get -y install python3-gpiozero
 
 pip3 install st7789 --break-system-packages
 
-sudo -u "$real_user" bash << HereTag #run the following commands as $real_user https://unix.stackexchange.com/a/231986
+sudo -u "$real_user" bash <<EOF #run the following commands as $real_user https://unix.stackexchange.com/a/231986
 
 cd /home/$real_user/
 mkdir pmap
@@ -139,7 +139,7 @@ curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/README.txt
 
 # End Here Tag 
-HereTag 
+EOF
 
 
 echo "\n**** installating dependencies and downloading pmap completed ****\n"
