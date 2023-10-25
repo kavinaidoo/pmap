@@ -136,6 +136,7 @@ while True:
     # Load default font.
     #font = ImageFont.load_default()
     font = ImageFont.truetype("Ubuntu-Regular.ttf", 15)
+    icons = ImageFont.truetype("pmap_icons.ttf", 30)
 
     # Define a function to create rotated text.  Unfortunately PIL doesn't have good
     # native support for rotated fonts, but this function can be used to make a
@@ -150,6 +151,9 @@ while True:
     draw_rotated_text(img, perc, (0, 60), 0, font, fill=(255, 255, 255))
     draw_rotated_text(img, cpu_temp, (0, 100), 0, font, fill=(255, 255, 255))
     draw_rotated_text(img, airplay_status_text, (0, 140), 0, font, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "\uF240 \uF1BC \uF179 \uF2C7", (0, 120), 0, icons, fill=(255, 255, 255))
+
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
