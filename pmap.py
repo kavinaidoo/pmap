@@ -212,7 +212,7 @@ def render_screen_1(): # Home Screen
     draw_rotated_text(img, icon_power, (200, 200), 0, icons, fill=(255, 255, 255))
     
     
-    draw_rotated_text(img, "pmap", (120, 120), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, "pmap", (80, 100), 0, font, fill=(255, 255, 255))
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
@@ -340,9 +340,9 @@ while True:
     
     match screen: # type: ignore
         case 1:
-            render_screen_1()    # Home Screen
+            render_screen_1()   # Home Screen
         case 2:
-            render_screen_2()       # Battery Screen
+            render_screen_2()   # Battery Screen
         case 3:
             render_screen_3()   # Power Screen
         case 5:
