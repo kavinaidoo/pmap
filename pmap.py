@@ -27,9 +27,9 @@ import os
 
 airplay_status = 1 # on
 screen = 1 # home screen
-font = ImageFont.truetype("Ubuntu-Regular.ttf", 30)
-font_small = ImageFont.truetype("Ubuntu-Regular.ttf", 20)
-icons = ImageFont.truetype("pmap_icons.ttf", 30)
+font = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 30)
+font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
+icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
 
 # initialize INA219
 ina219 = INA219(addr=0x43)
@@ -99,6 +99,8 @@ def x_pressed():
         screen = 2
 
     if screen == 3:
+        screen = 7
+        time.sleep(1)
         os.system('sudo reboot now')
 
 def y_pressed():
@@ -337,6 +339,25 @@ def render_screen_6(): # Shutdown Complete Screen
     # display!
     disp.display(img)
 
+def render_screen_7(): # Restart Complete Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+
+    draw_rotated_text(img, "Restarting", (40, 0), 0, font, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "pmap will return after", (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "a short break...", (10, 70), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
+
 
 while True:
     
@@ -351,6 +372,9 @@ while True:
             render_screen_5()   # Settings Screen
         case 6:
             render_screen_6()   # Shutdown Complete Screen
+        case 7:
+            render_screen_7()   # Restart Complete Screen
+ 
         case _:
             ...
 
