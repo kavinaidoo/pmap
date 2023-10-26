@@ -31,7 +31,6 @@ font = ImageFont.truetype("Ubuntu-Regular.ttf", 30)
 font_small = ImageFont.truetype("Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("pmap_icons.ttf", 30)
 
-
 # initialize INA219
 ina219 = INA219(addr=0x43)
 
@@ -297,6 +296,8 @@ def render_screen_5(): # Settings Screen
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
     draw = ImageDraw.Draw(img)
 
+    temp_text = "CPU Temp:     "+str(cpu_temp())+"°C"
+
     # Refer to global font variables
     global font 
     global icons 
@@ -307,6 +308,8 @@ def render_screen_5(): # Settings Screen
     draw_rotated_text(img, "Settings", (40, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, "No Settings yet :)", (10, 50), 0, font_small, fill=(255, 255, 255))
+
+    draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
@@ -349,4 +352,4 @@ while True:
         case _:
             ...
 
-    time.sleep(1)
+    time.sleep(2)
