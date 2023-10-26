@@ -337,19 +337,19 @@ def render_screen_6(): # Shutdown Complete Screen
 
 
 while True:
-
+    
     match screen: # type: ignore
         case 1:
-            render_screen_1()
+            render_screen_1()    # Home Screen
         case 2:
-            render_screen_2()
+            render_screen_2()       # Battery Screen
         case 3:
-            render_screen_3()
+            render_screen_3()   # Power Screen
         case 5:
-            render_screen_5()
+            render_screen_5()   # Settings Screen
         case 6:
-            render_screen_6()
+            render_screen_6()   # Shutdown Complete Screen
         case _:
             ...
 
-    time.sleep(2)
+    time.sleep(0.25)   #base refresh rate (4fps)
