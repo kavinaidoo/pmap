@@ -39,7 +39,7 @@ Battery System
 
 ### Installation Guide
 1. Setup Hardware using guide here -> https://kavi.sblmnl.co.za/pmap/
-2. Flash Raspberry Pi OS Lite (32-bit) to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added and SSH is enabled (Click ⚙️ to see these options)
+2. Flash Raspberry Pi OS Lite (32-bit) to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added and SSH is enabled (Click ⚙️ to see these options). **Username must be pi**
 3. SSH into Pi and run:
 ````
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
