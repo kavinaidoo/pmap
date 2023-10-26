@@ -138,7 +138,7 @@ cd /home/$real_user/pmap/pmap_icons_license_etc
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/LICENSE.txt
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/README.txt
 
-# End Here Tag 
+# End
 EOF
 
 
