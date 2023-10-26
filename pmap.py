@@ -233,6 +233,7 @@ def render_screen_2(): # Battery Screen
     perc_text = "Percent:       {:3.1f}%".format(perc)
     temp_text = "CPU Temp:     "+str(cpu_temp())
     
+    '''
     # Print values to terminal
     print(lv_text)
     print(curr_text)
@@ -240,6 +241,7 @@ def render_screen_2(): # Battery Screen
     print(perc_text)
     print(temp_text)
     print("")
+    '''
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
