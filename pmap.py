@@ -23,6 +23,9 @@ from gpiozero import PWMLED # type: ignore
 # import used to send terminal commands
 import os
 
+# import used to interact with settings
+import json
+
 # Global Variables
 
 airplay_status = 1 # on
@@ -31,13 +34,17 @@ font = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 30)
 font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
 
+# Read settings
+with open('/home/pi/pmap/config.json', 'r') as f:
+    config = json.load(f)
+
 # initialize INA219
 ina219 = INA219(addr=0x43)
 
 # setup display
 disp = ST7789.ST7789(
     height=240,
-    rotation=90,
+    rotation=config['screen_rotation'],
     port=0,
     cs=ST7789.BG_SPI_CS_FRONT,  # BG_SPI_CS_BACK or BG_SPI_CS_FRONT
     dc=9,
@@ -55,14 +62,23 @@ HEIGHT = disp.height
 
 # Initialize backlight
 backlight = PWMLED(13)
-backlight.value = 0.1
+backlight.value = config['backlight_brightness_percentage']/100
 
 # Initialize buttons + button functions
-a_but = Button(5)
-b_but = Button(6)
-x_but = Button(16)
-y_but = Button(24)
 
+if config['screen_rotation'] == 0:     # Maps buttons to pins depending on rotation
+    a_map,b_map,x_map,y_map = 16,5,24,6 
+elif config['screen_rotation'] == 90:
+    a_map,b_map,x_map,y_map = 5,6,16,24 # Default config is a 90 degree screen rotation
+elif config['screen_rotation'] == 180:
+    a_map,b_map,x_map,y_map = 6,24,5,16
+elif config['screen_rotation'] == 270:
+    a_map,b_map,x_map,y_map = 24,16,6,5
+
+a_but = Button(a_map) # top left button
+b_but = Button(b_map) # bottom left button
+x_but = Button(x_map) # top right button
+y_but = Button(y_map) # bottom right button
 
 def a_pressed():
     global screen
