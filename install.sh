@@ -14,8 +14,12 @@ fi
 echo "\n Welcome to the pmap installation script\n"
 echo " Usage of this script is at your own risk\n"
 echo " Designed for RPiOS Lite (32-bit Bookworm) on Pi Zero 2 \n"
+echo " Do not make any changes to config.txt before running this script\n"
+echo " The following will be set up:"
+echo " * I2S, SPI and config.txt\n"
 echo " The following will be installed:"
 echo " * shairport-sync with AirPlay 2 enabled"
+echo " * pmap with basic functionality\n"
 echo " Script will reboot Pi once completed\n"
 echo " To stop it from running, press ctrl+c within the next 30 seconds\n"
 
@@ -26,7 +30,22 @@ echo "\n**** Running apt-get update and upgrade ****\n"
 apt update
 apt upgrade -y
 
-# BEGIN shairport-sync installation
+# BEGIN enable i2c and spi and modifying config.txt ****************************************************
+
+echo "\n**** Enabling SPI and I2C using raspi-config ****\n"
+
+raspi-config nonint do_spi 0
+raspi-config nonint do_i2c 0
+
+
+echo "\n**** Adding lines to config.txt to recognize Pirate Audio pHAT ****\n"
+
+echo "dtoverlay=hifiberry-dac" >> /boot/config.txt
+echo "gpio=25=op,dh" >> /boot/config.txt
+
+# END enable i2c and spi and modifying config.txt ****************************************************
+
+# BEGIN shairport-sync installation ****************************************************
 # Install Steps have been replicated from -> https://github.com/mikebrady/shairport-sync/blob/master/BUILD.md
 
 echo "\n**** Installing shairport-sync ****\n"
@@ -71,8 +90,74 @@ systemctl enable shairport-sync
 
 echo "\n**** Installation of shairport-sync completed ****\n"
 
-# END shairport-sync installation
+# END shairport-sync installation ****************************************************
 
+# BEGIN pmap installation ****************************************************
+
+echo "\n**** Installing dependencies and downloading pmap ****\n"
+
+# required for INA219.py
+apt-get -y install python3-smbus
+# required for st7789
+apt-get -y install python3-rpi.gpio python3-spidev python3-pip python3-pil python3-numpy
+# required for pmap.py
+apt-get -y install python3-gpiozero
+
+pip3 install st7789 --break-system-packages
+
+sudo -u "$real_user" bash <<EOF #run the following commands as $real_user https://unix.stackexchange.com/a/231986
+
+cd /home/$real_user/
+mkdir pmap
+cd pmap
+
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/INA219.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.py
+
+#installating ubuntu font
+
+cd /home/$real_user/pmap
+
+curl -OSL https://github.com/google/fonts/raw/main/ufl/ubuntu/Ubuntu-Regular.ttf
+
+mkdir ubuntu_font_license_etc
+cd /home/$real_user/pmap/ubuntu_font_license_etc
+
+curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/COPYRIGHT.txt
+curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/TRADEMARKS.txt
+curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/UFL.txt
+
+#installating pmap_icons font
+
+cd /home/$real_user/pmap
+
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap_icons.ttf
+mkdir pmap_icons_license_etc
+cd /home/$real_user/pmap/pmap_icons_license_etc
+
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap_icons_license_etc/LICENSE.txt
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap_icons_license_etc/README.txt
+
+# End
+EOF
+
+echo "\n**** Installating dependencies and downloading pmap completed ****\n"
+
+# END pmap installation ****************************************************
+
+# START setting up pmap as a service ****************************************************
+
+echo "\n**** Setting up pmap as a service ****\n"
+
+cd /etc/systemd/system/
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.service
+
+systemctl daemon-reload
+systemctl enable pmap.service
+
+echo "\n**** Setting up pmap as a service completed ****\n"
+
+# END setting up pmap as a service ****************************************************
 
 echo "\n* Rebooting in 30 seconds *\n"
 sleep 30

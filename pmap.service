@@ -1,0 +1,10 @@
+[Unit]
+Description=pmap test
+After=multi-user.target
+
+[Service]
+ExecStart=/usr/bin/python3 /home/pi/pmap/pmap.py
+User=pi
+
+[Install]
+WantedBy=multi-user.target
