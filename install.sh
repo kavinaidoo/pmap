@@ -111,8 +111,8 @@ cd /home/$real_user/
 mkdir pmap
 cd pmap
 
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/INA219.py
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/INA219.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.py
 
 #installating ubuntu font
 
@@ -131,12 +131,12 @@ curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/UFL.txt
 
 cd /home/$real_user/pmap
 
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons.ttf
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap_icons.ttf
 mkdir pmap_icons_license_etc
 cd /home/$real_user/pmap/pmap_icons_license_etc
 
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/LICENSE.txt
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap_icons_license_etc/README.txt
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap_icons_license_etc/LICENSE.txt
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap_icons_license_etc/README.txt
 
 # End
 EOF
@@ -150,7 +150,7 @@ echo "\n**** Installating dependencies and downloading pmap completed ****\n"
 echo "\n**** Setting up pmap as a service ****\n"
 
 cd /etc/systemd/system/
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.service
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.service
 
 systemctl daemon-reload
 systemctl enable pmap.service

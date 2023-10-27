@@ -7,11 +7,15 @@ PMAP is a battery-powered portable audio player built around the "[pHAT](https:/
 
 ### Features
 * Supports AirPlay 2 using [shairport-sync](https://github.com/mikebrady/shairport-sync)
-
+* Control AirPlay reciever, reboot and shutdown using buttons
+* Dynamic battery icon (shows charge level + charge status)
 ---
 
 
 ### The Sandwich
+
+![pmap](pmap.jpg)
+
 The basic components are stacked and connected using the 40 pin GPIO:
 ````
 i2s DAC + Screen
@@ -38,9 +42,9 @@ Battery System
 ---
 
 ### Installation Guide
-1. Setup Hardware using guide here -> https://kavi.sblmnl.co.za/pmap/
+1. Setup Hardware using guide here -> ~~https://kavi.sblmnl.co.za/pmap/~~ (guide not available yet)
 2. Flash Raspberry Pi OS Lite (32-bit) to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added and SSH is enabled (Click ⚙️ to see these options). **Username must be pi**
-3. SSH into Pi and run:
+3. SSH into Pi and run (as pi user):
 ````
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
 ````
