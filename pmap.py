@@ -34,9 +34,26 @@ font = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 30)
 font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
 
-# Read settings
-with open('/home/pi/pmap/config.json', 'r') as f:
-    config = json.load(f)
+# Read settings with error handling
+try: 
+    with open('/home/pi/pmap/config.json', 'r') as f:
+        config = json.load(f)
+        screen_rotation = config['screen_rotation']
+        backlight_brightness_percentage = config['backlight_brightness_percentage']
+        f.close()
+
+except KeyError: #catch errors with keys in json file
+    config = { #create a default config to be used in this session
+        "screen_rotation": 90,
+        "backlight_brightness_percentage": 10
+    }
+    f.close()
+    with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
+        json.dump(config, f)
+        f.close()
+
+screen_rotation = config['screen_rotation']
+backlight_brightness_percentage = config['backlight_brightness_percentage']
 
 # initialize INA219
 ina219 = INA219(addr=0x43)
@@ -44,7 +61,7 @@ ina219 = INA219(addr=0x43)
 # setup display
 disp = ST7789.ST7789(
     height=240,
-    rotation=config['screen_rotation'],
+    rotation=screen_rotation,
     port=0,
     cs=ST7789.BG_SPI_CS_FRONT,  # BG_SPI_CS_BACK or BG_SPI_CS_FRONT
     dc=9,
@@ -62,7 +79,7 @@ HEIGHT = disp.height
 
 # Initialize backlight
 backlight = PWMLED(13)
-backlight.value = config['backlight_brightness_percentage']/100
+backlight.value = backlight_brightness_percentage/100
 
 # Initialize buttons + button functions
 
@@ -359,7 +376,7 @@ while True:
         case 1:
             render_screen_1()   # Home Screen
         case 2:
-            render_screen_2()   # Battery Screen
+            render_screen_2()   # Power Screen
         case 5:
             render_screen_5()   # Settings Screen
         case 6:
