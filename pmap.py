@@ -40,14 +40,12 @@ try:
         config = json.load(f)
         screen_rotation = config['screen_rotation']
         backlight_brightness_percentage = config['backlight_brightness_percentage']
-        f.close()
 
-except KeyError: #catch errors with keys in json file
+except: #catch all errors, whether it's related to opening the file or reading keys
     config = { #create a default config to be used in this session
         "screen_rotation": 90,
         "backlight_brightness_percentage": 10
     }
-    f.close()
     with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
         json.dump(config, f)
         f.close()
