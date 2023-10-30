@@ -104,7 +104,7 @@ def b_pressed():
         os.system('sudo pkill shairport-sync')
         airplay_status = 0
 
-    if screen == 3:
+    if screen == 2:
         screen = 6
         time.sleep(1)
         os.system('sudo shutdown now')
@@ -114,15 +114,15 @@ def x_pressed():
     if screen == 1:
         screen = 2
 
-    if screen == 3:
-        screen = 7
-        time.sleep(1)
-        os.system('sudo reboot now')
+
 
 def y_pressed():
     global screen
-    if screen == 1:
-        screen = 3
+
+    if screen == 2:
+        screen = 7
+        time.sleep(1)
+        os.system('sudo reboot now')
 
 a_but.when_pressed = a_pressed
 b_but.when_pressed = b_pressed
@@ -226,9 +226,6 @@ def render_screen_1(): # Home Screen
     else:
         draw_rotated_text(img, icon_batt_0, (200, 0), 0, icons, fill=fill_col)
     
-    # Bottom Right - Power Icon
-    draw_rotated_text(img, icon_power, (200, 200), 0, icons, fill=(255, 255, 255))
-    
     
     draw_rotated_text(img, "pmap", (80, 100), 0, font, fill=(255, 255, 255))
 
@@ -236,7 +233,7 @@ def render_screen_1(): # Home Screen
     # display!
     disp.display(img)    
 
-def render_screen_2(): # Battery Screen
+def render_screen_2(): # Power Screen
     
     batt = battery_stats()
     
@@ -272,12 +269,22 @@ def render_screen_2(): # Battery Screen
     # Top left - Back Icon
     draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
 
-    draw_rotated_text(img, "Battery", (40, 0), 0, font, fill=(255, 255, 255))
+    # Bottom Left - Shutdown Icon
+    draw_rotated_text(img, icon_power, (0, 200), 0, icons, fill=(255, 127, 127))
 
+    # Bottom Right - Reboot Icon
+    fill_col = (255, 255, 255) #white, default
+    draw_rotated_text(img, icon_reload, (200, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Power", (40, 0), 0, font, fill=(255, 255, 255))
+
+    #Battery Stats
     draw_rotated_text(img, lv_text, (10, 50), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, curr_text, (10, 70), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, pow_text, (10, 90), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, perc_text, (10, 110), 0, font_small, fill=(255, 255, 255))
+
+
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
