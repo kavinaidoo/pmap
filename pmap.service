@@ -1,5 +1,5 @@
 [Unit]
-Description=pmap test
+Description=pmap
 After=multi-user.target
 
 [Service]
