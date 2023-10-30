@@ -114,8 +114,6 @@ def x_pressed():
     if screen == 1:
         screen = 2
 
-
-
 def y_pressed():
     global screen
 
@@ -290,33 +288,6 @@ def render_screen_2(): # Power Screen
     # display!
     disp.display(img)
 
-def render_screen_3(): # Power Screen
-    
-    # Clear the display to a black background.
-    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    # Refer to global font variables
-    global font 
-    global icons 
-
-    # Top left - Back Icon
-    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
-
-    draw_rotated_text(img, "Power", (40, 0), 0, font, fill=(255, 255, 255))
-
-    # Bottom Left - Shutdown Icon
-    draw_rotated_text(img, icon_power, (0, 200), 0, icons, fill=(255, 127, 127))
-
-    # Top Right - Reboot Icon
-    fill_col = (255, 255, 255) #white, default
-    draw_rotated_text(img, icon_reload, (200, 0), 0, icons, fill=fill_col)
-
-
-    # Write buffer to display hardware, must be called to make things visible on the
-    # display!
-    disp.display(img)
-
 def render_screen_5(): # Settings Screen
     
     # Clear the display to a black background.
@@ -389,8 +360,6 @@ while True:
             render_screen_1()   # Home Screen
         case 2:
             render_screen_2()   # Battery Screen
-        case 3:
-            render_screen_3()   # Power Screen
         case 5:
             render_screen_5()   # Settings Screen
         case 6:
