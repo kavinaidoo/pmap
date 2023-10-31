@@ -29,7 +29,7 @@ import json
 # Global Variables
 
 airplay_status = 1 # on
-screen = 1 # home screen
+screen = "home" # home screen
 font = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 30)
 font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
@@ -98,42 +98,40 @@ y_but = Button(y_map) # bottom right button
 def a_pressed():
     global screen
 
-    if screen == 1:
-        screen = 5
-    elif screen > 1 and screen < 6:
-        screen = 1
-    elif screen == 5:
-        screen = 1
+    if screen == "home":
+        screen = "settings"
+    else:
+        screen = "home"
 
 def b_pressed():
 
     global airplay_status
     global screen
 
-    if screen == 1 and airplay_status == 0:
+    if screen == "home" and airplay_status == 0:
         os.system('sudo nqptp &')
         os.system('sudo shairport-sync &')
         airplay_status = 1
-    elif screen == 1 and airplay_status == 1:
+    elif screen == "home" and airplay_status == 1:
         os.system('sudo pkill nqptp')
         os.system('sudo pkill shairport-sync')
         airplay_status = 0
 
-    if screen == 2:
-        screen = 6
+    if screen == "power":
+        screen = "shutdown"
         time.sleep(1)
         os.system('sudo shutdown now')
 
 def x_pressed():
     global screen
-    if screen == 1:
-        screen = 2
+    if screen == "home":
+        screen = "power"
 
 def y_pressed():
     global screen
 
-    if screen == 2:
-        screen = 7
+    if screen == "power":
+        screen = "restart"
         time.sleep(1)
         os.system('sudo reboot now')
 
@@ -195,7 +193,7 @@ def cpu_temp():
 
     return round(cpu.temperature,2)
 
-def render_screen_1(): # Home Screen
+def render_home(): # Home Screen
     
     #Getting battery info
     batt = battery_stats()
@@ -246,7 +244,7 @@ def render_screen_1(): # Home Screen
     # display!
     disp.display(img)    
 
-def render_screen_2(): # Power Screen
+def render_power(): # Power Screen
     
     batt = battery_stats()
     
@@ -303,7 +301,7 @@ def render_screen_2(): # Power Screen
     # display!
     disp.display(img)
 
-def render_screen_5(): # Settings Screen
+def render_settings(): # Settings Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -328,7 +326,7 @@ def render_screen_5(): # Settings Screen
     # display!
     disp.display(img)
 
-def render_screen_6(): # Shutdown Complete Screen
+def render_shutdown(): # Shutdown Complete Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -348,7 +346,7 @@ def render_screen_6(): # Shutdown Complete Screen
     # display!
     disp.display(img)
 
-def render_screen_7(): # Restart Complete Screen
+def render_restart(): # Restart Complete Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -371,16 +369,16 @@ def render_screen_7(): # Restart Complete Screen
 while True:
     
     match screen: # type: ignore
-        case 1:
-            render_screen_1()   # Home Screen
-        case 2:
-            render_screen_2()   # Power Screen
-        case 5:
-            render_screen_5()   # Settings Screen
-        case 6:
-            render_screen_6()   # Shutdown Complete Screen
-        case 7:
-            render_screen_7()   # Restart Complete Screen
+        case "home":
+            render_home()   # Home Screen
+        case "power":
+            render_power()   # Power Screen
+        case "settings":
+            render_settings()   # Settings Screen
+        case "shutdown":
+            render_shutdown()   # Shutdown Complete Screen
+        case "restart":
+            render_restart()   # Restart Complete Screen
  
         case _:
             ...
