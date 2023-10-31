@@ -59,7 +59,7 @@ backlight_brightness_percentage = config['backlight_brightness_percentage']
 try:
     ina219 = INA219(addr=0x43)
 except:
-    battery_status = 0
+    battery_status = 0 #if battery can't be initialized, this var disables all battery stats/references
 
 # setup display
 disp = ST7789.ST7789(
@@ -163,7 +163,6 @@ def x_pressed():
             f.close()
         screen = "home"
         
-
 def y_pressed():
     global screen
     global rotation_icon_angle
