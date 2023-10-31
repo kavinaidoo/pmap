@@ -122,6 +122,8 @@ def b_pressed():
         time.sleep(1)
         os.system('sudo shutdown now')
     elif screen == "rotation":
+        screen = "brightness"
+    elif screen == "brightness":
         screen = "temperature"
     elif screen == "temperature":
         screen = "rotation"
@@ -130,6 +132,7 @@ def x_pressed():
     global screen
     global rotation_icon_angle
     global screen_rotation
+    global backlight_brightness_percentage
 
     if screen == "home":
         screen = "power"
@@ -145,11 +148,22 @@ def x_pressed():
         screen = "restart"
         time.sleep(2)
         os.system('sudo reboot now')
+    elif screen == "brightness":
+
+        if backlight_brightness_percentage < 10: backlight_brightness_percentage = 10
+        elif backlight_brightness_percentage > 100: backlight_brightness_percentage = 100
+
+        config['backlight_brightness_percentage'] = backlight_brightness_percentage
+        with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
+            json.dump(config, f)
+            f.close()
+        screen = "home"
         
 
 def y_pressed():
     global screen
     global rotation_icon_angle
+    global backlight_brightness_percentage
 
     if screen == "power":
         screen = "restart"
@@ -157,6 +171,9 @@ def y_pressed():
         os.system('sudo reboot now')
     elif screen == "rotation":
         rotation_icon_angle = rotation_icon_angle + 90
+    elif screen == "brightness":
+        backlight_brightness_percentage = backlight_brightness_percentage + 10
+
 
 a_but.when_pressed = a_pressed
 b_but.when_pressed = b_pressed
@@ -363,7 +380,7 @@ def render_shutdown(): # Shutdown Complete Screen
     global font 
     global icons 
 
-    draw_rotated_text(img, "Shutting down", (40, 0), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, "Shutting down", (0, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, "Wait for RPi status light", (10, 50), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, "to turn off before", (10, 70), 0, font_small, fill=(255, 255, 255))
@@ -383,7 +400,7 @@ def render_restart(): # Restart Complete Screen
     global font 
     global icons 
 
-    draw_rotated_text(img, "Restarting", (40, 0), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, "Restarting", (0, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, "pmap will return after", (10, 50), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, "a short break...", (10, 70), 0, font_small, fill=(255, 255, 255))
@@ -427,6 +444,44 @@ def render_settings_rotation(): # Rotation Settings Screen
     # display!
     disp.display(img)
 
+def render_settings_brightness(): # Brightness Settings Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+    global backlight
+    global backlight_brightness_percentage
+
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Top Right - Tick Icon
+    draw_rotated_text(img, icon_tick, (200, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
+    # Bottom Right - Right Icon
+    draw_rotated_text(img, icon_right_arrow, (200, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Brightness", (40, 0), 0, font, fill=(255, 255, 255))
+
+    if backlight_brightness_percentage > 100: #stops > 100
+        backlight_brightness_percentage = 10
+    
+    draw_rotated_text(img, str(backlight_brightness_percentage)+"%", (90, 90), 0, font, fill=(255, 255, 255))
+
+    backlight.value = backlight_brightness_percentage/100
+
+
+    #draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
+
 while True:
     
     match screen: # type: ignore
@@ -438,6 +493,8 @@ while True:
             render_settings_rotation()   # Rotation Settings Screen
         case "temperature":
             render_settings_temperature()   # Temperature Settings Screen
+        case "brightness":
+            render_settings_brightness()   # Brightness Settings Screen
         case "shutdown":
             render_shutdown()   # Shutdown Complete Screen
         case "restart":
