@@ -27,12 +27,13 @@ import os
 import json
 
 # Global Variables
-
+rotation_icon_angle = 0
 airplay_status = 1 # on
 screen = "home" # home screen
 font = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 30)
 font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
+icons_large = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 60)
 
 # Read settings with error handling
 try: 
@@ -81,13 +82,13 @@ backlight.value = backlight_brightness_percentage/100
 
 # Initialize buttons + button functions
 
-if config['screen_rotation'] == 0:     # Maps buttons to pins depending on rotation
+if screen_rotation == 0:     # Maps buttons to pins depending on rotation
     a_map,b_map,x_map,y_map = 16,5,24,6 
-elif config['screen_rotation'] == 90:
+elif screen_rotation == 90:
     a_map,b_map,x_map,y_map = 5,6,16,24 # Default config is a 90 degree screen rotation
-elif config['screen_rotation'] == 180:
+elif screen_rotation == 180:
     a_map,b_map,x_map,y_map = 6,24,5,16
-elif config['screen_rotation'] == 270:
+elif screen_rotation == 270:
     a_map,b_map,x_map,y_map = 24,16,6,5
 
 a_but = Button(a_map) # top left button
@@ -99,7 +100,7 @@ def a_pressed():
     global screen
 
     if screen == "home":
-        screen = "settings"
+        screen = "rotation"
     else:
         screen = "home"
 
@@ -116,24 +117,46 @@ def b_pressed():
         os.system('sudo pkill nqptp')
         os.system('sudo pkill shairport-sync')
         airplay_status = 0
-
-    if screen == "power":
+    elif screen == "power":
         screen = "shutdown"
         time.sleep(1)
         os.system('sudo shutdown now')
+    elif screen == "rotation":
+        screen = "temperature"
+    elif screen == "temperature":
+        screen = "rotation"
 
 def x_pressed():
     global screen
+    global rotation_icon_angle
+    global screen_rotation
+
     if screen == "home":
         screen = "power"
+    elif screen == "rotation":
+
+        screen_rotation = screen_rotation + rotation_icon_angle
+        screen_rotation = screen_rotation%360
+
+        config['screen_rotation'] = screen_rotation
+        with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
+            json.dump(config, f)
+            f.close()
+        screen = "restart"
+        time.sleep(2)
+        os.system('sudo reboot now')
+        
 
 def y_pressed():
     global screen
+    global rotation_icon_angle
 
     if screen == "power":
         screen = "restart"
-        time.sleep(1)
+        time.sleep(2)
         os.system('sudo reboot now')
+    elif screen == "rotation":
+        rotation_icon_angle = rotation_icon_angle + 90
 
 a_but.when_pressed = a_pressed
 b_but.when_pressed = b_pressed
@@ -150,7 +173,11 @@ icon_batt_0 = "\uF244"
 icon_airplay = "\uE814"
 icon_power = "\uE810"
 icon_left_arrow = "\uE806"
+icon_right_arrow = "\uE807"
+icon_down_arrow = "\uE805"
 icon_reload = "\uE809"
+icon_tick = "\uE813"
+icon_music_note = "\uE800"
 
 
 def draw_rotated_text(image, text, position, angle, font, fill=(255, 255, 255)):
@@ -301,7 +328,7 @@ def render_power(): # Power Screen
     # display!
     disp.display(img)
 
-def render_settings(): # Settings Screen
+def render_settings_temperature(): # Temperature Settings Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -315,10 +342,10 @@ def render_settings(): # Settings Screen
 
     # Top left - Back Icon
     draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
 
-    draw_rotated_text(img, "Settings", (40, 0), 0, font, fill=(255, 255, 255))
-
-    draw_rotated_text(img, "No Settings yet :)", (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "Temperature", (40, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
 
@@ -365,6 +392,40 @@ def render_restart(): # Restart Complete Screen
     # display!
     disp.display(img)
 
+def render_settings_rotation(): # Rotation Settings Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+    global rotation_icon_angle
+
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Top Right - Tick Icon
+    draw_rotated_text(img, icon_tick, (200, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
+    # Bottom Right - Right Icon
+    draw_rotated_text(img, icon_right_arrow, (200, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Rotation", (40, 0), 0, font, fill=(255, 255, 255))
+
+    
+    if rotation_icon_angle > 359: #stops angle from multiple rotations
+        rotation_icon_angle = 0
+    
+    draw_rotated_text(img, icon_music_note, (90, 90), rotation_icon_angle, icons_large, fill=(255, 255, 255))
+
+    #draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
 
 while True:
     
@@ -373,8 +434,10 @@ while True:
             render_home()   # Home Screen
         case "power":
             render_power()   # Power Screen
-        case "settings":
-            render_settings()   # Settings Screen
+        case "rotation":
+            render_settings_rotation()   # Rotation Settings Screen
+        case "temperature":
+            render_settings_temperature()   # Temperature Settings Screen
         case "shutdown":
             render_shutdown()   # Shutdown Complete Screen
         case "restart":
