@@ -27,6 +27,7 @@ import os
 import json
 
 # Global Variables
+battery_status = 1 #battery present
 rotation_icon_angle = 0
 airplay_status = 1 # on
 screen = "home" # home screen
@@ -55,7 +56,10 @@ screen_rotation = config['screen_rotation']
 backlight_brightness_percentage = config['backlight_brightness_percentage']
 
 # initialize INA219
-ina219 = INA219(addr=0x43)
+try:
+    ina219 = INA219(addr=0x43)
+except:
+    battery_status = 0
 
 # setup display
 disp = ST7789.ST7789(
@@ -189,6 +193,7 @@ icon_batt_25 = "\uF243"
 icon_batt_0 = "\uF244"
 icon_airplay = "\uE814"
 icon_power = "\uE810"
+icon_plug = "\uF1E6"
 icon_left_arrow = "\uE806"
 icon_right_arrow = "\uE807"
 icon_down_arrow = "\uE805"
@@ -240,9 +245,10 @@ def cpu_temp():
 def render_home(): # Home Screen
     
     #Getting battery info
-    batt = battery_stats()
-    curr = batt[1]    
-    perc = batt[3]
+    if battery_status:
+        batt = battery_stats()
+        curr = batt[1]    
+        perc = batt[3]
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -263,24 +269,26 @@ def render_home(): # Home Screen
     else:
         draw_rotated_text(img, icon_airplay, (0, 200), 0, icons, fill=(255, 255, 255))
 
-    # Top Right - Battery Icon
-    fill_col = (255, 255, 255) #white, default
-    if curr > 0: #charging
-        fill_col = (127, 255, 127) #green, charging
-    elif perc < 10: #not charging, batt < 10%
-        fill_col = (255, 127, 127) #red, needs to charge
-  
-    if perc > 90:
-        draw_rotated_text(img, icon_batt_100, (200, 0), 0, icons, fill=fill_col)
-    elif perc > 75:
-        draw_rotated_text(img, icon_batt_75, (200, 0), 0, icons, fill=fill_col)
-    elif perc > 50:
-        draw_rotated_text(img, icon_batt_50, (200, 0), 0, icons, fill=fill_col)
-    elif perc > 25:
-        draw_rotated_text(img, icon_batt_25, (200, 0), 0, icons, fill=fill_col)
-    else:
-        draw_rotated_text(img, icon_batt_0, (200, 0), 0, icons, fill=fill_col)
+    if battery_status:
+        # Top Right - Battery Icon
+        fill_col = (255, 255, 255) #white, default
+        if curr > 0: #charging
+            fill_col = (127, 255, 127) #green, charging
+        elif perc < 10: #not charging, batt < 10%
+            fill_col = (255, 127, 127) #red, needs to charge
     
+        if perc > 90:
+            draw_rotated_text(img, icon_batt_100, (200, 0), 0, icons, fill=fill_col)
+        elif perc > 75:
+            draw_rotated_text(img, icon_batt_75, (200, 0), 0, icons, fill=fill_col)
+        elif perc > 50:
+            draw_rotated_text(img, icon_batt_50, (200, 0), 0, icons, fill=fill_col)
+        elif perc > 25:
+            draw_rotated_text(img, icon_batt_25, (200, 0), 0, icons, fill=fill_col)
+        else:
+            draw_rotated_text(img, icon_batt_0, (200, 0), 0, icons, fill=fill_col)
+    else:
+        draw_rotated_text(img, icon_plug, (200, 0), 0, icons, fill=(255, 255, 255))
     
     draw_rotated_text(img, "pmap", (80, 100), 0, font, fill=(255, 255, 255))
 
@@ -290,18 +298,19 @@ def render_home(): # Home Screen
 
 def render_power(): # Power Screen
     
-    batt = battery_stats()
-    
-    lv = batt[0]
-    curr = batt[1]    
-    pow = batt[2]
-    perc = batt[3]
+    if battery_status:
+        batt = battery_stats()
+        
+        lv = batt[0]
+        curr = batt[1]    
+        pow = batt[2]
+        perc = batt[3]
 
-    lv_text = "Load Voltage:  {:6.3f} V".format(lv)
-    curr_text = "Current:       {:6.3f} A".format(curr)
-    pow_text = "Power:         {:6.3f} W".format(pow)
-    perc_text = "Percent:       {:3.1f}%".format(perc)
-    temp_text = "CPU Temp:     "+str(cpu_temp())
+        lv_text = "Load Voltage:  {:6.3f} V".format(lv)
+        curr_text = "Current:       {:6.3f} A".format(curr)
+        pow_text = "Power:         {:6.3f} W".format(pow)
+        perc_text = "Percent:       {:3.1f}%".format(perc)
+        temp_text = "CPU Temp:     "+str(cpu_temp())
     
     '''
     # Print values to terminal
@@ -333,12 +342,14 @@ def render_power(): # Power Screen
 
     draw_rotated_text(img, "Power", (40, 0), 0, font, fill=(255, 255, 255))
 
-    #Battery Stats
-    draw_rotated_text(img, lv_text, (10, 50), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, curr_text, (10, 70), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, pow_text, (10, 90), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, perc_text, (10, 110), 0, font_small, fill=(255, 255, 255))
-
+    if battery_status:
+        #Battery Stats
+        draw_rotated_text(img, lv_text, (10, 50), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, curr_text, (10, 70), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, pow_text, (10, 90), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, perc_text, (10, 110), 0, font_small, fill=(255, 255, 255))
+    else:
+        draw_rotated_text(img,"Battery not found", (10, 50), 0, font_small, fill=(255, 255, 255))
 
 
     # Write buffer to display hardware, must be called to make things visible on the
