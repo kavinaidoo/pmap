@@ -113,6 +113,7 @@ cd pmap
 
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/INA219.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/config.json
 
 #installating ubuntu font
 

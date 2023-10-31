@@ -23,21 +23,48 @@ from gpiozero import PWMLED # type: ignore
 # import used to send terminal commands
 import os
 
-# Global Variables
+# import used to interact with settings
+import json
 
+# Global Variables
+battery_status = 1 #battery present
+rotation_icon_angle = 0
 airplay_status = 1 # on
-screen = 1 # home screen
+screen = "home" # home screen
 font = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 30)
 font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
+icons_large = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 60)
+
+# Read settings with error handling
+try: 
+    with open('/home/pi/pmap/config.json', 'r') as f:
+        config = json.load(f)
+        screen_rotation = config['screen_rotation']
+        backlight_brightness_percentage = config['backlight_brightness_percentage']
+
+except: #catch all errors, whether it's related to opening the file or reading keys
+    config = { #create a default config to be used in this session
+        "screen_rotation": 90,
+        "backlight_brightness_percentage": 10
+    }
+    with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
+        json.dump(config, f)
+        f.close()
+
+screen_rotation = config['screen_rotation']
+backlight_brightness_percentage = config['backlight_brightness_percentage']
 
 # initialize INA219
-ina219 = INA219(addr=0x43)
+try:
+    ina219 = INA219(addr=0x43)
+except:
+    battery_status = 0
 
 # setup display
 disp = ST7789.ST7789(
     height=240,
-    rotation=90,
+    rotation=screen_rotation,
     port=0,
     cs=ST7789.BG_SPI_CS_FRONT,  # BG_SPI_CS_BACK or BG_SPI_CS_FRONT
     dc=9,
@@ -55,58 +82,102 @@ HEIGHT = disp.height
 
 # Initialize backlight
 backlight = PWMLED(13)
-backlight.value = 0.1
+backlight.value = backlight_brightness_percentage/100
 
 # Initialize buttons + button functions
-a_but = Button(5)
-b_but = Button(6)
-x_but = Button(16)
-y_but = Button(24)
 
+if screen_rotation == 0:     # Maps buttons to pins depending on rotation
+    a_map,b_map,x_map,y_map = 16,5,24,6 
+elif screen_rotation == 90:
+    a_map,b_map,x_map,y_map = 5,6,16,24 # Default config is a 90 degree screen rotation
+elif screen_rotation == 180:
+    a_map,b_map,x_map,y_map = 6,24,5,16
+elif screen_rotation == 270:
+    a_map,b_map,x_map,y_map = 24,16,6,5
+
+a_but = Button(a_map) # top left button
+b_but = Button(b_map) # bottom left button
+x_but = Button(x_map) # top right button
+y_but = Button(y_map) # bottom right button
 
 def a_pressed():
     global screen
 
-    if screen == 1:
-        screen = 5
-    elif screen > 1 and screen < 6:
-        screen = 1
-    elif screen == 5:
-        screen = 1
+    if screen == "home":
+        screen = "rotation"
+    else:
+        screen = "home"
 
 def b_pressed():
 
     global airplay_status
     global screen
 
-    if screen == 1 and airplay_status == 0:
+    if screen == "home" and airplay_status == 0:
         os.system('sudo nqptp &')
         os.system('sudo shairport-sync &')
         airplay_status = 1
-    elif screen == 1 and airplay_status == 1:
+    elif screen == "home" and airplay_status == 1:
         os.system('sudo pkill nqptp')
         os.system('sudo pkill shairport-sync')
         airplay_status = 0
-
-    if screen == 3:
-        screen = 6
+    elif screen == "power":
+        screen = "shutdown"
         time.sleep(1)
         os.system('sudo shutdown now')
+    elif screen == "rotation":
+        screen = "brightness"
+    elif screen == "brightness":
+        screen = "temperature"
+    elif screen == "temperature":
+        screen = "rotation"
 
 def x_pressed():
     global screen
-    if screen == 1:
-        screen = 2
+    global rotation_icon_angle
+    global screen_rotation
+    global backlight_brightness_percentage
 
-    if screen == 3:
-        screen = 7
-        time.sleep(1)
+    if screen == "home":
+        screen = "power"
+    elif screen == "rotation":
+
+        screen_rotation = screen_rotation + rotation_icon_angle
+        screen_rotation = screen_rotation%360
+
+        config['screen_rotation'] = screen_rotation
+        with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
+            json.dump(config, f)
+            f.close()
+        screen = "restart"
+        time.sleep(2)
         os.system('sudo reboot now')
+    elif screen == "brightness":
+
+        if backlight_brightness_percentage < 10: backlight_brightness_percentage = 10
+        elif backlight_brightness_percentage > 100: backlight_brightness_percentage = 100
+
+        config['backlight_brightness_percentage'] = backlight_brightness_percentage
+        with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
+            json.dump(config, f)
+            f.close()
+        screen = "home"
+        
 
 def y_pressed():
     global screen
-    if screen == 1:
-        screen = 3
+    global rotation_icon_angle
+    global backlight_brightness_percentage
+
+    if screen == "power":
+        screen = "restart"
+        time.sleep(2)
+        os.system('sudo reboot now')
+    elif screen == "rotation":
+        rotation_icon_angle = rotation_icon_angle + 90
+    elif screen == "brightness":
+        backlight_brightness_percentage = backlight_brightness_percentage + 10
+
 
 a_but.when_pressed = a_pressed
 b_but.when_pressed = b_pressed
@@ -122,8 +193,13 @@ icon_batt_25 = "\uF243"
 icon_batt_0 = "\uF244"
 icon_airplay = "\uE814"
 icon_power = "\uE810"
+icon_plug = "\uF1E6"
 icon_left_arrow = "\uE806"
+icon_right_arrow = "\uE807"
+icon_down_arrow = "\uE805"
 icon_reload = "\uE809"
+icon_tick = "\uE813"
+icon_music_note = "\uE800"
 
 
 def draw_rotated_text(image, text, position, angle, font, fill=(255, 255, 255)):
@@ -166,12 +242,13 @@ def cpu_temp():
 
     return round(cpu.temperature,2)
 
-def render_screen_1(): # Home Screen
+def render_home(): # Home Screen
     
     #Getting battery info
-    batt = battery_stats()
-    curr = batt[1]    
-    perc = batt[3]
+    if battery_status:
+        batt = battery_stats()
+        curr = batt[1]    
+        perc = batt[3]
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -192,27 +269,26 @@ def render_screen_1(): # Home Screen
     else:
         draw_rotated_text(img, icon_airplay, (0, 200), 0, icons, fill=(255, 255, 255))
 
-    # Top Right - Battery Icon
-    fill_col = (255, 255, 255) #white, default
-    if curr > 0: #charging
-        fill_col = (127, 255, 127) #green, charging
-    elif perc < 10: #not charging, batt < 10%
-        fill_col = (255, 127, 127) #red, needs to charge
-  
-    if perc > 90:
-        draw_rotated_text(img, icon_batt_100, (200, 0), 0, icons, fill=fill_col)
-    elif perc > 75:
-        draw_rotated_text(img, icon_batt_75, (200, 0), 0, icons, fill=fill_col)
-    elif perc > 50:
-        draw_rotated_text(img, icon_batt_50, (200, 0), 0, icons, fill=fill_col)
-    elif perc > 25:
-        draw_rotated_text(img, icon_batt_25, (200, 0), 0, icons, fill=fill_col)
+    if battery_status:
+        # Top Right - Battery Icon
+        fill_col = (255, 255, 255) #white, default
+        if curr > 0: #charging
+            fill_col = (127, 255, 127) #green, charging
+        elif perc < 10: #not charging, batt < 10%
+            fill_col = (255, 127, 127) #red, needs to charge
+    
+        if perc > 90:
+            draw_rotated_text(img, icon_batt_100, (200, 0), 0, icons, fill=fill_col)
+        elif perc > 75:
+            draw_rotated_text(img, icon_batt_75, (200, 0), 0, icons, fill=fill_col)
+        elif perc > 50:
+            draw_rotated_text(img, icon_batt_50, (200, 0), 0, icons, fill=fill_col)
+        elif perc > 25:
+            draw_rotated_text(img, icon_batt_25, (200, 0), 0, icons, fill=fill_col)
+        else:
+            draw_rotated_text(img, icon_batt_0, (200, 0), 0, icons, fill=fill_col)
     else:
-        draw_rotated_text(img, icon_batt_0, (200, 0), 0, icons, fill=fill_col)
-    
-    # Bottom Right - Power Icon
-    draw_rotated_text(img, icon_power, (200, 200), 0, icons, fill=(255, 255, 255))
-    
+        draw_rotated_text(img, icon_plug, (200, 0), 0, icons, fill=(255, 255, 255))
     
     draw_rotated_text(img, "pmap", (80, 100), 0, font, fill=(255, 255, 255))
 
@@ -220,20 +296,21 @@ def render_screen_1(): # Home Screen
     # display!
     disp.display(img)    
 
-def render_screen_2(): # Battery Screen
+def render_power(): # Power Screen
     
-    batt = battery_stats()
-    
-    lv = batt[0]
-    curr = batt[1]    
-    pow = batt[2]
-    perc = batt[3]
+    if battery_status:
+        batt = battery_stats()
+        
+        lv = batt[0]
+        curr = batt[1]    
+        pow = batt[2]
+        perc = batt[3]
 
-    lv_text = "Load Voltage:  {:6.3f} V".format(lv)
-    curr_text = "Current:       {:6.3f} A".format(curr)
-    pow_text = "Power:         {:6.3f} W".format(pow)
-    perc_text = "Percent:       {:3.1f}%".format(perc)
-    temp_text = "CPU Temp:     "+str(cpu_temp())
+        lv_text = "Load Voltage:  {:6.3f} V".format(lv)
+        curr_text = "Current:       {:6.3f} A".format(curr)
+        pow_text = "Power:         {:6.3f} W".format(pow)
+        perc_text = "Percent:       {:3.1f}%".format(perc)
+        temp_text = "CPU Temp:     "+str(cpu_temp())
     
     '''
     # Print values to terminal
@@ -256,45 +333,30 @@ def render_screen_2(): # Battery Screen
     # Top left - Back Icon
     draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
 
-    draw_rotated_text(img, "Battery", (40, 0), 0, font, fill=(255, 255, 255))
-
-    draw_rotated_text(img, lv_text, (10, 50), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, curr_text, (10, 70), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, pow_text, (10, 90), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, perc_text, (10, 110), 0, font_small, fill=(255, 255, 255))
-
-    # Write buffer to display hardware, must be called to make things visible on the
-    # display!
-    disp.display(img)
-
-def render_screen_3(): # Power Screen
-    
-    # Clear the display to a black background.
-    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
-    draw = ImageDraw.Draw(img)
-
-    # Refer to global font variables
-    global font 
-    global icons 
-
-    # Top left - Back Icon
-    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
-
-    draw_rotated_text(img, "Power", (40, 0), 0, font, fill=(255, 255, 255))
-
     # Bottom Left - Shutdown Icon
     draw_rotated_text(img, icon_power, (0, 200), 0, icons, fill=(255, 127, 127))
 
-    # Top Right - Reboot Icon
+    # Bottom Right - Reboot Icon
     fill_col = (255, 255, 255) #white, default
-    draw_rotated_text(img, icon_reload, (200, 0), 0, icons, fill=fill_col)
+    draw_rotated_text(img, icon_reload, (200, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Power", (40, 0), 0, font, fill=(255, 255, 255))
+
+    if battery_status:
+        #Battery Stats
+        draw_rotated_text(img, lv_text, (10, 50), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, curr_text, (10, 70), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, pow_text, (10, 90), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, perc_text, (10, 110), 0, font_small, fill=(255, 255, 255))
+    else:
+        draw_rotated_text(img,"Battery not found", (10, 50), 0, font_small, fill=(255, 255, 255))
 
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
     disp.display(img)
 
-def render_screen_5(): # Settings Screen
+def render_settings_temperature(): # Temperature Settings Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -308,10 +370,10 @@ def render_screen_5(): # Settings Screen
 
     # Top left - Back Icon
     draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
 
-    draw_rotated_text(img, "Settings", (40, 0), 0, font, fill=(255, 255, 255))
-
-    draw_rotated_text(img, "No Settings yet :)", (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "Temperature", (40, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
 
@@ -319,7 +381,7 @@ def render_screen_5(): # Settings Screen
     # display!
     disp.display(img)
 
-def render_screen_6(): # Shutdown Complete Screen
+def render_shutdown(): # Shutdown Complete Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -329,7 +391,7 @@ def render_screen_6(): # Shutdown Complete Screen
     global font 
     global icons 
 
-    draw_rotated_text(img, "Shutting down", (40, 0), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, "Shutting down", (0, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, "Wait for RPi status light", (10, 50), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, "to turn off before", (10, 70), 0, font_small, fill=(255, 255, 255))
@@ -339,7 +401,7 @@ def render_screen_6(): # Shutdown Complete Screen
     # display!
     disp.display(img)
 
-def render_screen_7(): # Restart Complete Screen
+def render_restart(): # Restart Complete Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
@@ -349,7 +411,7 @@ def render_screen_7(): # Restart Complete Screen
     global font 
     global icons 
 
-    draw_rotated_text(img, "Restarting", (40, 0), 0, font, fill=(255, 255, 255))
+    draw_rotated_text(img, "Restarting", (0, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, "pmap will return after", (10, 50), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, "a short break...", (10, 70), 0, font_small, fill=(255, 255, 255))
@@ -358,22 +420,96 @@ def render_screen_7(): # Restart Complete Screen
     # display!
     disp.display(img)
 
+def render_settings_rotation(): # Rotation Settings Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+    global rotation_icon_angle
+
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Top Right - Tick Icon
+    draw_rotated_text(img, icon_tick, (200, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
+    # Bottom Right - Right Icon
+    draw_rotated_text(img, icon_right_arrow, (200, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Rotation", (40, 0), 0, font, fill=(255, 255, 255))
+
+    
+    if rotation_icon_angle > 359: #stops angle from multiple rotations
+        rotation_icon_angle = 0
+    
+    draw_rotated_text(img, icon_music_note, (90, 90), rotation_icon_angle, icons_large, fill=(255, 255, 255))
+
+    #draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
+
+def render_settings_brightness(): # Brightness Settings Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+    global backlight
+    global backlight_brightness_percentage
+
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Top Right - Tick Icon
+    draw_rotated_text(img, icon_tick, (200, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
+    # Bottom Right - Right Icon
+    draw_rotated_text(img, icon_right_arrow, (200, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Brightness", (40, 0), 0, font, fill=(255, 255, 255))
+
+    if backlight_brightness_percentage > 100: #stops > 100
+        backlight_brightness_percentage = 10
+    
+    draw_rotated_text(img, str(backlight_brightness_percentage)+"%", (90, 90), 0, font, fill=(255, 255, 255))
+
+    backlight.value = backlight_brightness_percentage/100
+
+
+    #draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
 
 while True:
     
     match screen: # type: ignore
-        case 1:
-            render_screen_1()   # Home Screen
-        case 2:
-            render_screen_2()   # Battery Screen
-        case 3:
-            render_screen_3()   # Power Screen
-        case 5:
-            render_screen_5()   # Settings Screen
-        case 6:
-            render_screen_6()   # Shutdown Complete Screen
-        case 7:
-            render_screen_7()   # Restart Complete Screen
+        case "home":
+            render_home()   # Home Screen
+        case "power":
+            render_power()   # Power Screen
+        case "rotation":
+            render_settings_rotation()   # Rotation Settings Screen
+        case "temperature":
+            render_settings_temperature()   # Temperature Settings Screen
+        case "brightness":
+            render_settings_brightness()   # Brightness Settings Screen
+        case "shutdown":
+            render_shutdown()   # Shutdown Complete Screen
+        case "restart":
+            render_restart()   # Restart Complete Screen
  
         case _:
             ...
