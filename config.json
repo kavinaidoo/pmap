@@ -1,4 +1,5 @@
 {
     "screen_rotation": 90,
-    "backlight_brightness_percentage": 10
+    "backlight_brightness_percentage": 10,
+    "startup_renderer":"airplay"
 }
