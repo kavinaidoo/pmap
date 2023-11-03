@@ -15,7 +15,7 @@ from PIL import ImageDraw   # type: ignore
 from PIL import ImageFont   # type: ignore
 import ST7789               # type: ignore
 
-# imports used for buttons + temperature sensing
+# imports used for buttons + temperature sensing + controlling backlight brightness
 from gpiozero import Button # type: ignore
 from gpiozero import CPUTemperature # type: ignore
 from gpiozero import PWMLED # type: ignore
@@ -40,9 +40,9 @@ hostname = os.uname()[1]
 try: 
     with open('/home/pi/pmap/config.json', 'r') as f:
         config = json.load(f)
-        screen_rotation = config['screen_rotation']
-        backlight_brightness_percentage = config['backlight_brightness_percentage']
-        startup_renderer = config['startup_renderer']
+        screen_rotation = config['screen_rotation'] # 0,90,180,270 
+        backlight_brightness_percentage = config['backlight_brightness_percentage'] # 10 - 100
+        startup_renderer = config['startup_renderer'] # remembers last used renderer -> spotify or airplay
 
 except: #catch all errors, whether it's related to opening the file or reading keys
     config = { #create a default config to be used in this session
@@ -160,7 +160,7 @@ def x_pressed():
 
     if screen == "home":
         screen = "power"
-    elif screen == "rotation":
+    elif screen == "rotation": # saves screen rotation settings and reboots 
 
         screen_rotation = screen_rotation + rotation_icon_angle
         screen_rotation = screen_rotation%360
