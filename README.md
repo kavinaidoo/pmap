@@ -9,14 +9,14 @@ PMAP is a battery-powered portable audio player built around the "[pHAT](https:/
 * Install script sets up config.txt and enables SPI and I2C automatically
 * Supports AirPlay 2 using [shairport-sync](https://github.com/mikebrady/shairport-sync)
 * Supports Spotify Connect using [raspotify](https://github.com/dtcooper/raspotify)
-* Control AirPlay 2/Spotify Connect reciever, reboot and shutdown using buttons
+* Menu system allows for control of screen rotation and brightness, AirPlay 2/Spotify Connect reciever, reboot and shutdown.
 * Dynamic battery icon (shows charge level + charge status)
-* Settings for backlight and screen rotation
+* Settings for backlight, screen rotation and last used renderer persist across reboots.
 ---
 
 
 ### The Sandwich
-(Note, due to updates, UI may not be the same as below:)
+(Note, due to updates, UI may be different to the image below:)
 
 ![pmap](pmap.jpg)
 
@@ -47,19 +47,18 @@ Battery System (Optional)
 
 ### Installation Guide
 1. Setup Hardware using "Setup Guide" section here -> https://kavi.sblmnl.co.za/pmap/
-2. Flash Raspberry Pi OS Lite (32-bit) to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added, SSH is enabled and **username must be pi** (Click ⚙️ to see these options). Hostname will be used as the AirPlay 2 device name.
+2. Flash Raspberry Pi OS Lite (32-bit) to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added, SSH is enabled and **username must be pi** (Click ⚙️ to see these options). Hostname will be used as the AirPlay 2 and Spotify Connect device name.
 3. [SSH into Pi](https://www.raspberrypi.com/documentation/computers/remote-access.html#secure-shell-from-linux-or-mac-os) and run (as pi user):
 ````
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
 ````
+4. At the end of the install, your screen should look similar to the one in the image above.
+5. Look at the [User Guide](https://github.com/kavinaidoo/pmap/blob/main/USERGUIDE.md) for more instructions and information.
 ---
 
-### Main Files
-* install.sh - Installs pmap and all supporting software (eg. shairport-sync)
-* pmap.py - Code that runs the screen, GPIO etc.
+### Icons
+Guide [here](https://github.com/kavinaidoo/pmap/blob/main/ICONS.md)
 
 ---
 ### Disclaimer
-**This project is in active development. Interface may change, features may change, run the install script at your own risk!**
-
-
+**This project is in active development. The interface and features may change unexpectedly. Running any software or script is entirely at your own risk!**
