@@ -26,10 +26,10 @@ echo " To stop it from running, press ctrl+c within the next 30 seconds\n"
 
 sleep 30
 
-echo "\n**** Running apt update and upgrade ****\n"
+echo "\n**** Running apt-get update and upgrade ****\n"
 
-apt update
-apt upgrade -y
+apt-get update
+apt-get upgrade -y
 
 # BEGIN enable i2c and spi and modifying config.txt ****************************************************
 
@@ -116,6 +116,8 @@ curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/INA219.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/config.json
 
+sed -i 's|/home/pi|/home/$real_user|g' pmap.py
+
 #installating ubuntu font
 
 cd /home/$real_user/pmap
@@ -153,6 +155,9 @@ echo "\n**** Setting up pmap as a service ****\n"
 
 cd /etc/systemd/system/
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.service
+
+sed -i "s|/home/pi|/home/$real_user|g" pmap.service # https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+sed -i "s|User=pi|User=$real_user|g" pmap.service
 
 systemctl daemon-reload
 systemctl enable pmap.service
