@@ -48,7 +48,7 @@ Battery System (Optional)
 ### Installation Guide
 1. Setup Hardware using "Setup Guide" section here -> https://kavi.sblmnl.co.za/pmap/
 2. Flash Raspberry Pi OS Lite (32-bit) to SD Card using Raspberry Pi Imager. Make sure WiFi settings are added and SSH is enabled. (Click ⚙️ to see these options). Hostname will be used as the AirPlay 2 and Spotify Connect device name.
-3. [SSH into Pi](https://www.raspberrypi.com/documentation/computers/remote-access.html#secure-shell-from-linux-or-mac-os) and run (as pi user):
+3. [SSH into Pi](https://www.raspberrypi.com/documentation/computers/remote-access.html#secure-shell-from-linux-or-mac-os) and run:
 ````
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
 ````
