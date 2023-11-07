@@ -113,8 +113,8 @@ mkdir pmap
 cd pmap
 
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/INA219.py
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap.py
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/config.json
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/config.json
 
 sed -i 's|/home/pi|/home/$real_user|g' pmap.py
 
