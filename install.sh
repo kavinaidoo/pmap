@@ -13,13 +13,14 @@ fi
 
 echo "\n Welcome to the pmap installation script\n"
 echo " Usage of this script is at your own risk\n"
-echo " Designed for RPiOS Lite (32-bit Bookworm) on Pi Zero 2 \n"
+echo " Designed for Raspberry Pi OS Lite (32-bit Bookworm) on Pi Zero 2 W\n"
 echo " Do not make any changes to config.txt before running this script\n"
 echo " The following will be set up:"
 echo " * I2S, SPI and config.txt\n"
 echo " The following will be installed:"
-echo " * shairport-sync with AirPlay 2 enabled"
-echo " * pmap with basic functionality\n"
+echo " * shairport-sync enabling AirPlay 2"
+echo " * raspotify enabling Spotify Connect"
+echo " * pmap enabling button and screen control\n"
 echo " Script will reboot Pi once completed\n"
 echo " To stop it from running, press ctrl+c within the next 30 seconds\n"
 
@@ -27,8 +28,8 @@ sleep 30
 
 echo "\n**** Running apt-get update and upgrade ****\n"
 
-apt update
-apt upgrade -y
+apt-get update
+apt-get upgrade -y
 
 # BEGIN enable i2c and spi and modifying config.txt ****************************************************
 
@@ -36,7 +37,6 @@ echo "\n**** Enabling SPI and I2C using raspi-config ****\n"
 
 raspi-config nonint do_spi 0
 raspi-config nonint do_i2c 0
-
 
 echo "\n**** Adding lines to config.txt to recognize Pirate Audio pHAT ****\n"
 
@@ -56,7 +56,6 @@ apt-get -y install --no-install-recommends build-essential git autoconf automake
     libpopt-dev libconfig-dev libasound2-dev avahi-daemon libavahi-client-dev libssl-dev libsoxr-dev \
     libplist-dev libsodium-dev libavutil-dev libavcodec-dev libavformat-dev uuid-dev libgcrypt-dev xxd
 
-
 echo "\n* Cloning, making and installing nqptp *\n"
 
 cd /home/$real_user/
@@ -66,12 +65,6 @@ autoreconf -fi
 ./configure --with-systemd-startup
 make
 make install
-
-#TODO - remove these lines when switching to manually starting nqptp
-echo "\n* Enabling nqptp as a service *\n"
-systemctl enable nqptp
-systemctl start nqptp
-
 
 echo "\n* Cloning, making and installing shairport-sync *\n"
 
@@ -84,13 +77,21 @@ autoreconf -fi
 make
 make install
 
-#TODO - remove these lines when switching to manually starting shairport-sync
-echo "\n* Enabling shairport-sync as a service *\n"
-systemctl enable shairport-sync
-
 echo "\n**** Installation of shairport-sync completed ****\n"
 
 # END shairport-sync installation ****************************************************
+
+# BEGIN raspotify installation ****************************************************
+
+echo "\n**** Installing raspotify ****\n"
+
+curl -sL https://dtcooper.github.io/raspotify/install.sh | sh
+
+# disabling raspotify as a service. librespot will be called by user action
+
+systemctl disable raspotify.service
+
+# END raspotify installation ****************************************************
 
 # BEGIN pmap installation ****************************************************
 
@@ -114,6 +115,8 @@ cd pmap
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/INA219.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/config.json
+
+sed -i 's|/home/pi|/home/$real_user|g' pmap.py
 
 #installating ubuntu font
 
@@ -152,6 +155,9 @@ echo "\n**** Setting up pmap as a service ****\n"
 
 cd /etc/systemd/system/
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap.service
+
+sed -i "s|/home/pi|/home/$real_user|g" pmap.service # https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
+sed -i "s|User=pi|User=$real_user|g" pmap.service
 
 systemctl daemon-reload
 systemctl enable pmap.service

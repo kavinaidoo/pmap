@@ -15,12 +15,12 @@ from PIL import ImageDraw   # type: ignore
 from PIL import ImageFont   # type: ignore
 import ST7789               # type: ignore
 
-# imports used for buttons + temperature sensing
+# imports used for buttons + temperature sensing + controlling backlight brightness
 from gpiozero import Button # type: ignore
 from gpiozero import CPUTemperature # type: ignore
 from gpiozero import PWMLED # type: ignore
 
-# import used to send terminal commands
+# import used to send terminal commands + get hostname
 import os
 
 # import used to interact with settings
@@ -29,24 +29,26 @@ import json
 # Global Variables
 battery_status = 1 #battery present
 rotation_icon_angle = 0
-airplay_status = 1 # on
 screen = "home" # home screen
 font = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 30)
 font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
 icons_large = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 60)
+hostname = os.uname()[1]
 
 # Read settings with error handling
 try: 
     with open('/home/pi/pmap/config.json', 'r') as f:
         config = json.load(f)
-        screen_rotation = config['screen_rotation']
-        backlight_brightness_percentage = config['backlight_brightness_percentage']
+        screen_rotation = config['screen_rotation'] # 0,90,180,270 
+        backlight_brightness_percentage = config['backlight_brightness_percentage'] # 10 - 100
+        startup_renderer = config['startup_renderer'] # remembers last used renderer -> spotify or airplay
 
 except: #catch all errors, whether it's related to opening the file or reading keys
     config = { #create a default config to be used in this session
         "screen_rotation": 90,
-        "backlight_brightness_percentage": 10
+        "backlight_brightness_percentage": 10,
+        "startup_renderer":"airplay"
     }
     with open('/home/pi/pmap/config.json', 'w') as f: #write default config to file
         json.dump(config, f)
@@ -54,12 +56,22 @@ except: #catch all errors, whether it's related to opening the file or reading k
 
 screen_rotation = config['screen_rotation']
 backlight_brightness_percentage = config['backlight_brightness_percentage']
+startup_renderer = config['startup_renderer']
+
+renderer = startup_renderer
+
+# starting the correct renderer on startup
+if renderer == "airplay":
+    os.system('sudo nqptp &')
+    os.system('sudo shairport-sync &')
+elif renderer == "spotify":
+    os.system('librespot --disable-audio-cache --disable-credential-cache -q -n "'+hostname+'" --device-type "audiodongle" -b 320 --initial-volume 20 --enable-volume-normalisation --autoplay &')
 
 # initialize INA219
 try:
     ina219 = INA219(addr=0x43)
 except:
-    battery_status = 0
+    battery_status = 0 #if battery can't be initialized, this var disables all battery stats/references
 
 # setup display
 disp = ST7789.ST7789(
@@ -110,19 +122,26 @@ def a_pressed():
 
 def b_pressed():
 
-    global airplay_status
     global screen
+    global config
+    global renderer
 
-    if screen == "home" and airplay_status == 0:
+    if screen == "home" and renderer == "spotify":
+        os.system('sudo pkill librespot')
         os.system('sudo nqptp &')
         os.system('sudo shairport-sync &')
-        airplay_status = 1
-    elif screen == "home" and airplay_status == 1:
+        renderer = "airplay"
+    elif screen == "home" and renderer == "airplay":
         os.system('sudo pkill nqptp')
         os.system('sudo pkill shairport-sync')
-        airplay_status = 0
+        os.system('librespot --disable-audio-cache --disable-credential-cache -q -n "headphones" --device-type "audiodongle" -b 320 --initial-volume 20 --enable-volume-normalisation --autoplay &')
+        renderer = "spotify"
     elif screen == "power":
         screen = "shutdown"
+        config['startup_renderer'] = renderer
+        with open('/home/pi/pmap/config.json', 'w') as f: #write config to file
+            json.dump(config, f)
+            f.close()
         time.sleep(1)
         os.system('sudo shutdown now')
     elif screen == "rotation":
@@ -137,10 +156,11 @@ def x_pressed():
     global rotation_icon_angle
     global screen_rotation
     global backlight_brightness_percentage
+    global config
 
     if screen == "home":
         screen = "power"
-    elif screen == "rotation":
+    elif screen == "rotation": # saves screen rotation settings and reboots 
 
         screen_rotation = screen_rotation + rotation_icon_angle
         screen_rotation = screen_rotation%360
@@ -163,14 +183,18 @@ def x_pressed():
             f.close()
         screen = "home"
         
-
 def y_pressed():
     global screen
     global rotation_icon_angle
     global backlight_brightness_percentage
+    global renderer
 
     if screen == "power":
         screen = "restart"
+        config['startup_renderer'] = renderer
+        with open('/home/pi/pmap/config.json', 'w') as f: #write config to file
+            json.dump(config, f)
+            f.close()
         time.sleep(2)
         os.system('sudo reboot now')
     elif screen == "rotation":
@@ -192,6 +216,7 @@ icon_batt_50 = "\uF242"
 icon_batt_25 = "\uF243"
 icon_batt_0 = "\uF244"
 icon_airplay = "\uE814"
+icon_spotify = "\uF1BC"
 icon_power = "\uE810"
 icon_plug = "\uF1E6"
 icon_left_arrow = "\uE806"
@@ -243,7 +268,8 @@ def cpu_temp():
     return round(cpu.temperature,2)
 
 def render_home(): # Home Screen
-    
+    global renderer
+
     #Getting battery info
     if battery_status:
         batt = battery_stats()
@@ -261,13 +287,11 @@ def render_home(): # Home Screen
     # Top Left - Settings Icon
     draw_rotated_text(img, icon_settings, (0, 0), 0, icons, fill=(255, 255, 255))
 
-    # Bottom Left - AirPlay Icon
-    if airplay_status == 1:
-        draw_rotated_text(img, icon_airplay, (0, 200), 0, icons, fill=(127, 255, 127))
-    elif airplay_status == 0:
-        draw_rotated_text(img, icon_airplay, (0, 200), 0, icons, fill=(255, 127, 127))
-    else:
+    # Bottom Left - Renderer Icon
+    if renderer == "airplay":
         draw_rotated_text(img, icon_airplay, (0, 200), 0, icons, fill=(255, 255, 255))
+    elif renderer == "spotify":
+        draw_rotated_text(img, icon_spotify, (0, 200), 0, icons, fill=(255, 255, 255))
 
     if battery_status:
         # Top Right - Battery Icon
