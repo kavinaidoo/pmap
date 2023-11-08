@@ -112,9 +112,9 @@ cd /home/$real_user/
 mkdir pmap
 cd pmap
 
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap/INA219.py
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap/pmap.py
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap/config.json
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/INA219.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/pmap.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/config.json
 
 sed -i 's|/home/pi|/home/$real_user|g' pmap.py
 
@@ -135,7 +135,7 @@ curl -O https://raw.githubusercontent.com/google/fonts/main/ufl/ubuntu/UFL.txt
 
 cd /home/$real_user/pmap
 
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap/pmap_icons.ttf
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/pmap_icons.ttf
 mkdir pmap_icons_license_etc
 cd /home/$real_user/pmap/pmap_icons_license_etc
 
@@ -154,7 +154,7 @@ echo "\033[0;36m\n**** Installating dependencies and downloading pmap completed 
 echo "\033[0;36m\n**** Setting up pmap as a service ****\033[0m\n"
 
 cd /etc/systemd/system/
-curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/dev/pmap/pmap.service
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/pmap.service
 
 sed -i "s|/home/pi|/home/$real_user|g" pmap.service # https://askubuntu.com/questions/76808/how-do-i-use-variables-in-a-sed-command
 sed -i "s|User=pi|User=$real_user|g" pmap.service
