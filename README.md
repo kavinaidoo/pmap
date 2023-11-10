@@ -60,5 +60,18 @@ curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sud
 Guide [here](https://github.com/kavinaidoo/pmap/blob/main/ICONS.md)
 
 ---
+
 ### Disclaimer
 **This project is in active development. The interface and features may change unexpectedly. Running any software or script is entirely at your own risk!**
+
+---
+
+### Credits
+This project would not be possible without the contributors to the following (and contributors to their numerous dependencies):
+* [shairport-sync](https://github.com/mikebrady/shairport-sync) - AirPlay 2
+* [raspotify](https://github.com/dtcooper/raspotify) - Spotify 
+* [gpiozero](https://github.com/gpiozero/gpiozero) - Buttons and backlight
+* [st7789](https://github.com/pimoroni/st7789-python/) - Screen
+* [nmcli](https://github.com/ushiboy/nmcli) - Network connection
+
+These packages are installed by the installation script. Refer to the individual projects for license information.
