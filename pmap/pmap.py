@@ -1,9 +1,13 @@
 #!/usr/bin/env python3
 # pylance: reportMissingImports=false
 
+# ---- Main Python File for pmap
+
 # Credits
 # ST7789-related code based on https://github.com/pimoroni/st7789-python/blob/master/examples/shapes.py
 # INA219-related code based on INA219.py
+
+# --------------- Import Section
 
 # imports used to interact with UPS HAT
 from INA219 import INA219
@@ -26,7 +30,8 @@ import os
 # import used to interact with settings
 import json
 
-# Global Variables
+# --------------- Global Variables
+
 battery_status = 1 #battery present
 rotation_icon_angle = 0
 screen = "home" # home screen
@@ -35,6 +40,27 @@ font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
 icons_large = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 60)
 hostname = os.uname()[1]
+
+# Icons
+icon_settings = "\uE801"
+icon_batt_100 = "\uF240"
+icon_batt_75 = "\uF241"
+icon_batt_50 = "\uF242"
+icon_batt_25 = "\uF243"
+icon_batt_0 = "\uF244"
+icon_airplay = "\uE814"
+icon_spotify = "\uF1BC"
+icon_power = "\uE810"
+icon_plug = "\uF1E6"
+icon_left_arrow = "\uE806"
+icon_right_arrow = "\uE807"
+icon_down_arrow = "\uE805"
+icon_reload = "\uE809"
+icon_tick = "\uE813"
+icon_music_note = "\uE800"
+
+
+# --------------- Setup and Initialization
 
 # Read settings with error handling
 try: 
@@ -202,30 +228,12 @@ def y_pressed():
     elif screen == "brightness":
         backlight_brightness_percentage = backlight_brightness_percentage + 10
 
-
 a_but.when_pressed = a_pressed
 b_but.when_pressed = b_pressed
 x_but.when_pressed = x_pressed
 y_but.when_pressed = y_pressed
 
-# Icons
-icon_settings = "\uE801"
-icon_batt_100 = "\uF240"
-icon_batt_75 = "\uF241"
-icon_batt_50 = "\uF242"
-icon_batt_25 = "\uF243"
-icon_batt_0 = "\uF244"
-icon_airplay = "\uE814"
-icon_spotify = "\uF1BC"
-icon_power = "\uE810"
-icon_plug = "\uF1E6"
-icon_left_arrow = "\uE806"
-icon_right_arrow = "\uE807"
-icon_down_arrow = "\uE805"
-icon_reload = "\uE809"
-icon_tick = "\uE813"
-icon_music_note = "\uE800"
-
+# --------------- Function Definitions
 
 def draw_rotated_text(image, text, position, angle, font, fill=(255, 255, 255)):
     # Get rendered font width and height.
@@ -517,6 +525,8 @@ def render_settings_brightness(): # Brightness Settings Screen
     # display!
     disp.display(img)
 
+# --------------- Main Loop
+
 while True:
     
     match screen: # type: ignore
@@ -538,4 +548,4 @@ while True:
         case _:
             ...
 
-    time.sleep(0.25)   #base refresh rate (4fps)
+    time.sleep(0.25)   # Base refresh rate (4fps)
