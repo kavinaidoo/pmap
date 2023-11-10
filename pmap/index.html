@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="en">
+    <head>
+        <style>
+            * {
+                font-family: Arial, Helvetica, sans-serif;
+            }
+            input {
+                width: 200px;
+                padding: 5px 5px;
+                margin: 8px 0;
+                box-sizing: border-box;
+            }
+            button {
+                background-color: #04AA6D;
+                border: none;
+                color: white;
+                padding: 10px 20px;
+                text-decoration: none;
+                margin: 4px 2px;
+                cursor: pointer;
+            }
+        </style>
+        <meta charset="UTF-8" />
+        <meta http-equiv="X-UA-Compatible" content="IE=edge" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no" />
+        <title>PMAP Wifi Setup</title>
+    </head>
+    <body>
+    <h3>PMAP WiFi Setup</h1>
+    <div id = "ssidpwForm" style="display:block">
+        <div>Enter your WiFi details below. These details will be used to connect to your network</div>
+        <br>
+        <form method="POST">
+            <div>
+                <label for="ssid">WiFi Name</label>
+                <br>
+                <input name="ssid" id="ssid" />
+            </div>
+            <div>
+                <label for="pw">Password</label>
+                <br>
+                <input name="pw" id="pw" type="password"/>
+            </div>
+            <div>
+                <button>Save</button>
+            </div>
+        </form>
+    </div>
+    <br>
+    <div id = "detailsStored" style = "display:none">Details stored. This window will close shortly, look at PMAP screen for status</div>
+    <script>
+        function showConnecting(){
+            document.getElementById("detailsStored").style = "display:block";
+            document.getElementById("ssidpwForm").style = "display:none";
+        }
+        submitButton = document.querySelector('button');
+        submitButton.addEventListener("click", showConnecting);
+    </script>
+    </body>
+</html>
