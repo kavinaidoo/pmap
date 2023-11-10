@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# pylance: reportMissingImports=false
 
 # Credits
 # ST7789-related code based on https://github.com/pimoroni/st7789-python/blob/master/examples/shapes.py
@@ -9,16 +10,15 @@ from INA219 import INA219
 import time
 
 # imports used to interact with screen
-import sys
-from PIL import Image       # type: ignore
-from PIL import ImageDraw   # type: ignore
-from PIL import ImageFont   # type: ignore
-import ST7789               # type: ignore
+from PIL import Image       
+from PIL import ImageDraw   
+from PIL import ImageFont  
+import ST7789               
 
 # imports used for buttons + temperature sensing + controlling backlight brightness
-from gpiozero import Button # type: ignore
-from gpiozero import CPUTemperature # type: ignore
-from gpiozero import PWMLED # type: ignore
+from gpiozero import Button 
+from gpiozero import CPUTemperature 
+from gpiozero import PWMLED 
 
 # import used to send terminal commands + get hostname
 import os
