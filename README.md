@@ -68,10 +68,10 @@ Guide [here](https://github.com/kavinaidoo/pmap/blob/main/ICONS.md)
 
 ### Credits
 This project would not be possible without the contributors to the following (and contributors to their numerous dependencies):
-* [shairport-sync](https://github.com/mikebrady/shairport-sync) - AirPlay 2
-* [raspotify](https://github.com/dtcooper/raspotify) - Spotify 
-* [gpiozero](https://github.com/gpiozero/gpiozero) - Buttons and backlight
-* [st7789](https://github.com/pimoroni/st7789-python/) - Screen
-* [nmcli](https://github.com/ushiboy/nmcli) - Network connection
+* [shairport-sync](https://github.com/mikebrady/shairport-sync) - AirPlay 2 support
+* [raspotify](https://github.com/dtcooper/raspotify) - Spotify support
+* [gpiozero](https://github.com/gpiozero/gpiozero) - Buttons and backlight control
+* [st7789](https://github.com/pimoroni/st7789-python/) - Screen control
+* [nmcli](https://github.com/ushiboy/nmcli) - Network connection management
 
 These packages are installed by the installation script. Refer to the individual projects for license information.
