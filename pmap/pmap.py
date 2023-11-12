@@ -30,6 +30,9 @@ import os
 # import used to interact with settings
 import json
 
+# import for network connectivity
+import pmap_network
+
 # --------------- Global Variables
 
 battery_status = 1 #battery present
@@ -40,6 +43,8 @@ font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
 icons_large = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 60)
 hostname = os.uname()[1]
+wifi_local_ip = pmap_network.local_ip_address()[0]
+wifi_network = pmap_network.local_ip_address()[1]
 
 # Icons
 icon_settings = "\uE801"
@@ -175,6 +180,8 @@ def b_pressed():
     elif screen == "brightness":
         screen = "temperature"
     elif screen == "temperature":
+        screen = "wifi"
+    elif screen == "wifi":
         screen = "rotation"
 
 def x_pressed():
@@ -377,9 +384,9 @@ def render_power(): # Power Screen
     if battery_status:
         #Battery Stats
         draw_rotated_text(img, lv_text, (10, 50), 0, font_small, fill=(255, 255, 255))
-        draw_rotated_text(img, curr_text, (10, 70), 0, font_small, fill=(255, 255, 255))
-        draw_rotated_text(img, pow_text, (10, 90), 0, font_small, fill=(255, 255, 255))
-        draw_rotated_text(img, perc_text, (10, 110), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, curr_text, (10, 75), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, pow_text, (10, 100), 0, font_small, fill=(255, 255, 255))
+        draw_rotated_text(img, perc_text, (10, 125), 0, font_small, fill=(255, 255, 255))
     else:
         draw_rotated_text(img,"Battery not found", (10, 50), 0, font_small, fill=(255, 255, 255))
 
@@ -394,7 +401,7 @@ def render_settings_temperature(): # Temperature Settings Screen
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-    temp_text = "CPU Temp:     "+str(cpu_temp())+"°C"
+    temp_text = "CPU Temp: "+str(cpu_temp())+"°C"
 
     # Refer to global font variables
     global font 
@@ -408,6 +415,31 @@ def render_settings_temperature(): # Temperature Settings Screen
     draw_rotated_text(img, "Temperature", (40, 0), 0, font, fill=(255, 255, 255))
 
     draw_rotated_text(img, temp_text, (10, 90), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
+
+def render_settings_wifi(): # Temperature Settings Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+
+    # Refer to global font variables
+    global font 
+    global icons 
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "WiFi", (40, 0), 0, font, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "SSID: "+str(wifi_network), (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "IP: "+str(wifi_local_ip), (10, 75), 0, font_small, fill=(255, 255, 255))
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
@@ -540,6 +572,8 @@ while True:
             render_settings_temperature()   # Temperature Settings Screen
         case "brightness":
             render_settings_brightness()   # Brightness Settings Screen
+        case "wifi":
+            render_settings_wifi()   # WiFi Settings Screen
         case "shutdown":
             render_shutdown()   # Shutdown Complete Screen
         case "restart":
