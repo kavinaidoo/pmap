@@ -53,11 +53,11 @@ Battery System (Optional)
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
 ````
 4. At the end of the install, your screen should look similar to the one in the image above.
-5. Look at the [User Guide](https://github.com/kavinaidoo/pmap/blob/main/USERGUIDE.md) for more instructions and information.
+5. Look at the [User Guide](https://github.com/kavinaidoo/pmap/blob/main/docs/USERGUIDE.md) for more instructions and information.
 ---
 
 ### Icons
-Guide [here](https://github.com/kavinaidoo/pmap/blob/main/ICONS.md)
+Guide [here](https://github.com/kavinaidoo/pmap/blob/main/docs/ICONS.md)
 
 ---
 

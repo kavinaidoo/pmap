@@ -10,3 +10,7 @@ To get the icons used in PMAP, a custom font(pmap_icons.ttf) that only includes 
 6. Inside the zip file will be a "font" folder that contains your font (eg. pmap_icons.ttf) in ttf format
 
 In your code, you can add variables to represent the Unicode code points (eg. icon_settings = "\uE801"). Look inside [pmap.py](https://github.com/kavinaidoo/pmap/blob/main/pmap.py) to see how they are used.
+
+## Current list of icons in pmap_icons.ttf
+
+![pmap](current_icons.png)
