@@ -41,7 +41,7 @@ Statistics about the battery will be displayed (if present). Upon choosing shutd
 
 ---
 
-### Settings Menu
+### Settings Menu (Except WiFi Settings)
 
 ````
 ⬅          ✔️       
@@ -57,5 +57,23 @@ Statistics about the battery will be displayed (if present). Upon choosing shutd
 * ✔️ - Save Setting
 
 Settings will only persist reboots if saved. Saving certain settings may force a reboot.
+
+---
+
+### WiFi Settings
+
+````
+⬅ WiFi     S                       ⬅ WiFi Setup 
+-------                             -------
+-------            --------->       -------
+-------                             -------
+⬇                    
+````
+
+* ⬅ - Back to Home Screen
+* ⬇ - Next Setting
+* **S** - Slider Icon - WiFi Setup
+
+When on the WiFi Setup screen, pmap disconnects from the WiFi Network (if connected) and creates a hotspot for you to connect to with another device. Once connected to the hotspot, you'll be able to use your device to add or modify WiFi settings on pmap.
 
 ---
