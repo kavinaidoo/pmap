@@ -45,6 +45,7 @@ icons_large = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 60)
 hostname = os.uname()[1]
 wifi_local_ip = pmap_network.wifi_network_info()[0]
 wifi_network = pmap_network.wifi_network_info()[1]
+refresh_counter = 0 #used to modify refresh rate for specific polling in render screens
 
 # Icons
 icon_settings = "\uE801"
@@ -63,6 +64,7 @@ icon_down_arrow = "\uE805"
 icon_reload = "\uE809"
 icon_tick = "\uE813"
 icon_music_note = "\uE800"
+icon_sliders = "\uF1DE"
 
 
 # --------------- Setup and Initialization
@@ -146,7 +148,10 @@ y_but = Button(y_map) # bottom right button
 def a_pressed():
     global screen
 
-    if screen == "home":
+    if screen == "wifisetup":
+        screen = "wifi"
+        pmap_network.hotspot_off()
+    elif screen == "home":
         screen = "rotation"
     else:
         screen = "home"
@@ -178,10 +183,10 @@ def b_pressed():
     elif screen == "rotation":
         screen = "brightness"
     elif screen == "brightness":
-        screen = "temperature"
-    elif screen == "temperature":
         screen = "wifi"
     elif screen == "wifi":
+        screen = "temperature"
+    elif screen == "temperature":
         screen = "rotation"
 
 def x_pressed():
@@ -215,6 +220,11 @@ def x_pressed():
             json.dump(config, f)
             f.close()
         screen = "home"
+    elif screen == "wifi":
+        screen = "wifisetup"
+        pmap_network.hotspot_on()
+
+    
         
 def y_pressed():
     global screen
@@ -420,30 +430,71 @@ def render_settings_temperature(): # Temperature Settings Screen
     # display!
     disp.display(img)
 
-def render_settings_wifi(): # Temperature Settings Screen
+def render_settings_wifi(): # Wifi Settings Screen
     
     # Clear the display to a black background.
     img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
     draw = ImageDraw.Draw(img)
 
-
     # Refer to global font variables
     global font 
     global icons 
+    global wifi_local_ip
+    global wifi_network
+    global refresh_counter
+
+    if refresh_counter == 0:
+        wifi_local_ip = pmap_network.wifi_network_info()[0]
+        wifi_network = pmap_network.wifi_network_info()[1]
 
     # Top left - Back Icon
     draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Top Right - Sliders Icon
+    draw_rotated_text(img, icon_sliders, (200, 0), 0, icons, fill=(255, 255, 255))
     # Bottom Left - Down Icon
     draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
 
     draw_rotated_text(img, "WiFi", (40, 0), 0, font, fill=(255, 255, 255))
 
-    draw_rotated_text(img, "SSID: "+str(wifi_network), (10, 50), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, "IP: "+str(wifi_local_ip), (10, 75), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "WiFi Network:", (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(wifi_network)+"\"", (10, 75), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "IP Address:", (10, 100), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(wifi_local_ip)+"\"", (10, 125), 0, font_small, fill=(255, 255, 255))
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
     disp.display(img)
+
+def render_wifi_setup(): # Wifi Setup Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+
+    if len(hostname) < 8:
+        hotspot_password = hostname + (8-len(hostname))*"0"
+    else:
+        hotspot_password = hostname
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "WiFi Setup", (40, 0), 0, font, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Connect to:", (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(hostname)+"\"", (10, 75), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "WiFi Network using:", (10, 100), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(hotspot_password)+"\"", (10, 125), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "as your password", (10, 150), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
+
 
 def render_shutdown(): # Shutdown Complete Screen
     
@@ -559,8 +610,9 @@ def render_settings_brightness(): # Brightness Settings Screen
 
 # --------------- Main Loop
 
+
+
 while True:
-    
     match screen: # type: ignore
         case "home":
             render_home()   # Home Screen
@@ -574,6 +626,8 @@ while True:
             render_settings_brightness()   # Brightness Settings Screen
         case "wifi":
             render_settings_wifi()   # WiFi Settings Screen
+        case "wifisetup":
+            render_wifi_setup()   # WiFi Settings Screen
         case "shutdown":
             render_shutdown()   # Shutdown Complete Screen
         case "restart":
@@ -581,5 +635,9 @@ while True:
  
         case _:
             ...
+
+    refresh_counter = refresh_counter + 1
+    if refresh_counter > 6: # two seconds if base refresh rate is 4fps
+        refresh_counter = 0
 
     time.sleep(0.25)   # Base refresh rate (4fps)
