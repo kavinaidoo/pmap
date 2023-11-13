@@ -4,14 +4,13 @@ PMAP is a battery-powered portable audio player built around the "[pHAT](https:/
 
 ---
 
-
 ### Features
-* Install script sets up config.txt and enables SPI and I2C automatically
-* Supports AirPlay 2 using [shairport-sync](https://github.com/mikebrady/shairport-sync)
-* Supports Spotify Connect using [raspotify](https://github.com/dtcooper/raspotify)
-* Menu system allows for control of screen rotation and brightness, AirPlay 2/Spotify Connect reciever, reboot and shutdown.
+* Install script sets up config.txt and enables SPI and I2C.
+* Supports AirPlay 2 and Spotify Connect.
+* Control screen rotation and brightness, AirPlay 2/Spotify Connect, reboot and shutdown using screen and buttons
 * Dynamic battery icon (shows charge level + charge status)
 * Settings for backlight, screen rotation and last used renderer persist across reboots.
+
 ---
 
 
@@ -31,7 +30,6 @@ Battery System
 and then held securely using standoffs.
 
 ---
-
 
 ### Compatible Hardware
 i2s DAC + Screen
@@ -67,11 +65,4 @@ Guide [here](https://github.com/kavinaidoo/pmap/blob/main/docs/ICONS.md)
 ---
 
 ### Credits
-This project would not be possible without the contributors to the following (and contributors to their numerous dependencies):
-* [shairport-sync](https://github.com/mikebrady/shairport-sync) - AirPlay 2 support
-* [raspotify](https://github.com/dtcooper/raspotify) - Spotify support
-* [gpiozero](https://github.com/gpiozero/gpiozero) - Buttons and backlight control
-* [st7789](https://github.com/pimoroni/st7789-python/) - Screen control
-* [nmcli](https://github.com/ushiboy/nmcli) - Network connection management
-
-These packages are installed by the installation script. Refer to the individual projects for license information.
+This project would not be possible without the contributors of it's numerous dependencies. A list can be found in [CREDITS](https://github.com/kavinaidoo/pmap/blob/main/docs/CREDITS.md).
