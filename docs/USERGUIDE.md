@@ -70,7 +70,7 @@ Settings will only persist reboots if saved. Saving certain settings may force a
 ⬇                    
 ````
 
-* ⬅ - Back to Home Screen
+* ⬅ - Back to Home Screen (WiFi) / Back to Wifi (WiFi Setup)
 * ⬇ - Next Setting
 * **S** - Slider Icon - WiFi Setup
 
