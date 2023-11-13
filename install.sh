@@ -117,6 +117,7 @@ cd pmap
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/INA219.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/pmap.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/config.json
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/pmap_network.py
 
 sed -i 's|/home/pi|/home/$real_user|g' pmap.py
 

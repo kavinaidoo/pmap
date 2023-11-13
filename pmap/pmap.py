@@ -43,8 +43,8 @@ font_small = ImageFont.truetype("/home/pi/pmap/Ubuntu-Regular.ttf", 20)
 icons = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 30)
 icons_large = ImageFont.truetype("/home/pi/pmap/pmap_icons.ttf", 60)
 hostname = os.uname()[1]
-wifi_local_ip = pmap_network.local_ip_address()[0]
-wifi_network = pmap_network.local_ip_address()[1]
+wifi_local_ip = pmap_network.wifi_network_info()[0]
+wifi_network = pmap_network.wifi_network_info()[1]
 
 # Icons
 icon_settings = "\uE801"
