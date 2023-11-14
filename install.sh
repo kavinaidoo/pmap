@@ -107,6 +107,8 @@ apt-get -y install python3-gpiozero
 pip3 install st7789 --break-system-packages
 # required for pmap.py - allows control of network connections
 pip3 install nmcli --break-system-packages
+# required for pmap.py - creates webserver that is used to set up pmap
+pip3 install simple_http_server --break-system-packages
 
 sudo -u "$real_user" bash <<EOF #run the following commands as $real_user https://unix.stackexchange.com/a/231986
 
@@ -118,8 +120,10 @@ curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/INA219.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/pmap.py
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/config.json
 curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/pmap_network.py
+curl -O https://raw.githubusercontent.com/kavinaidoo/pmap/main/pmap/index.html
 
 sed -i 's|/home/pi|/home/$real_user|g' pmap.py
+sed -i 's|/home/pi|/home/$real_user|g' pmap_network.py
 
 #installating ubuntu font
 

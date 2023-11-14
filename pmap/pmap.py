@@ -150,7 +150,8 @@ def a_pressed():
 
     if screen == "wifisetup":
         screen = "wifi"
-        pmap_network.hotspot_off()
+        #pmap_network.hotspot_off()
+        pmap_network.setup_server_control('off')
     elif screen == "home":
         screen = "rotation"
     else:
@@ -222,7 +223,8 @@ def x_pressed():
         screen = "home"
     elif screen == "wifi":
         screen = "wifisetup"
-        pmap_network.hotspot_on()
+        #pmap_network.hotspot_on()
+        pmap_network.setup_server_control('on')
 
     
         

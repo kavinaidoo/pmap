@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="en">
     <head>
+
         <style>
             * {
                 font-family: Arial, Helvetica, sans-serif;
@@ -21,6 +22,7 @@
                 cursor: pointer;
             }
         </style>
+
         <meta charset="UTF-8" />
         <meta http-equiv="X-UA-Compatible" content="IE=edge" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0 maximum-scale=1.0, user-scalable=no" />
@@ -29,13 +31,14 @@
     <body>
     <h3>PMAP WiFi Setup</h1>
     <div id = "ssidpwForm" style="display:block">
-        <div>Enter your WiFi details below. These details will be used to connect to your network</div>
+        <div>Enter/Update your WiFi details below.</div>
         <br>
         <form method="POST">
             <div>
                 <label for="ssid">WiFi Name</label>
                 <br>
-                <input name="ssid" id="ssid" />
+                <select name="ssid" id="ssid">
+                </select>
             </div>
             <div>
                 <label for="pw">Password</label>
@@ -48,7 +51,9 @@
         </form>
     </div>
     <br>
-    <div id = "detailsStored" style = "display:none">Details stored. This window will close shortly, look at PMAP screen for status</div>
+    <div id = "detailsStored" style = "display:none">Details stored. You can now close this browser tab. Look at PMAP screen for status</div>
+    <div id = "noNetworksFound" style = "display:none">No WiFi Networks found, click back arrow in pmap and enter setup again to re-scan.</div>
+
     <script>
         function showConnecting(){
             document.getElementById("detailsStored").style = "display:block";
@@ -56,6 +61,26 @@
         }
         submitButton = document.querySelector('button');
         submitButton.addEventListener("click", showConnecting);
+
+        ssidElement = document.getElementById("ssid");
+        
+        ssid_list = [];
+
+
+        if (ssid_list.length == 0){
+            document.getElementById("ssidpwForm").style = "display:none";
+            document.getElementById("noNetworksFound").style = "display:block";
+        }
+
+        for (x of ssid_list){
+            insert = document.createElement("option");
+            insert.text = x;
+            insert.value = x;
+            ssidElement.appendChild(insert);
+
+        }
+
     </script>
-    </body>
+    
+</body>
 </html>
