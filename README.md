@@ -4,16 +4,15 @@ PMAP is a battery-powered portable audio player built around the "[pHAT](https:/
 
 ---
 
-
 ### Features
-* Install script sets up config.txt and enables SPI and I2C automatically
-* Supports AirPlay 2 using [shairport-sync](https://github.com/mikebrady/shairport-sync)
-* Supports Spotify Connect using [raspotify](https://github.com/dtcooper/raspotify)
-* Menu system allows for control of screen rotation and brightness, AirPlay 2/Spotify Connect reciever, reboot and shutdown.
-* Dynamic battery icon (shows charge level + charge status)
+* Install script sets up config.txt and enables SPI and I2C.
+* Supports AirPlay 2 and Spotify Connect.
+* Control screen rotation and brightness, AirPlay 2/Spotify Connect, reboot and shutdown using screen and buttons.
+* Dynamic battery icon (shows charge level + charge status).
 * Settings for backlight, screen rotation and last used renderer persist across reboots.
----
+* Add WiFi networks easily via hotspot mode.
 
+---
 
 ### The Sandwich
 (Note, due to updates, UI may be different to the image below:)
@@ -31,7 +30,6 @@ Battery System
 and then held securely using standoffs.
 
 ---
-
 
 ### Compatible Hardware
 i2s DAC + Screen
@@ -53,12 +51,18 @@ Battery System (Optional)
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
 ````
 4. At the end of the install, your screen should look similar to the one in the image above.
-5. Look at the [User Guide](https://github.com/kavinaidoo/pmap/blob/main/USERGUIDE.md) for more instructions and information.
+5. Look at the [User Guide](https://github.com/kavinaidoo/pmap/blob/main/docs/USERGUIDE.md) for more instructions and information.
 ---
 
 ### Icons
-Guide [here](https://github.com/kavinaidoo/pmap/blob/main/ICONS.md)
+Guide [here](https://github.com/kavinaidoo/pmap/blob/main/docs/ICONS.md)
 
 ---
+
 ### Disclaimer
 **This project is in active development. The interface and features may change unexpectedly. Running any software or script is entirely at your own risk!**
+
+---
+
+### Credits
+This project would not be possible without the contributors to it's numerous dependencies. A list can be found in [CREDITS](https://github.com/kavinaidoo/pmap/blob/main/docs/CREDITS.md).
