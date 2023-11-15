@@ -7,9 +7,10 @@ PMAP is a battery-powered portable audio player built around the "[pHAT](https:/
 ### Features
 * Install script sets up config.txt and enables SPI and I2C.
 * Supports AirPlay 2 and Spotify Connect.
-* Control screen rotation and brightness, AirPlay 2/Spotify Connect, reboot and shutdown using screen and buttons
-* Dynamic battery icon (shows charge level + charge status)
+* Control screen rotation and brightness, AirPlay 2/Spotify Connect, reboot and shutdown using screen and buttons.
+* Dynamic battery icon (shows charge level + charge status).
 * Settings for backlight, screen rotation and last used renderer persist across reboots.
+* Add WiFi networks easily via hotspot mode.
 
 ---
 
