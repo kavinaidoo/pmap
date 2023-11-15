@@ -70,57 +70,36 @@ def wifi_list(): # returns lists of all APs, saved, available and unsaved
 
     return saved_wifi_conns,avail_networks,unsaved_wifi_conns
 
-def process_html(option): # inserts ssids into index.html or sends "details stored" message
+def process_html(option): # inserts ssids into index.html 
     with open('/home/pi/pmap/index.html', 'r') as index_html:
         raw_html = index_html.read()
 
     if option == "ssid":
         processed_html = re.sub('ssid_list = \[\]','ssid_list = '+str(wifi_list()[1]),raw_html)
-    #elif option == 'detailsstored':
-    #    processed_html = re.sub('status = \'\'','status = \'showDetailsStored\'',raw_html)
-    #elif option == 'errorinssid':
-    #    processed_html = re.sub('status = \'\'','status = \'showErrorInSSIDorPW\'',raw_html)
-    #    processed_html = re.sub('ssid_list = \[\]','ssid_list = '+str(wifi_list()[1]),processed_html)
 
     return processed_html
 
-
 def run_setup_server():
-
 
     @route("/favicon.ico", method=['GET'])
     def favicon():
-        print('********************************* favicon 404')
         return Response(status_code=404)
 
     @route("/", method=["GET"])
     def index():
-        print('********************************* get /')
         return process_html('ssid')
 
     @route("/", method=["POST"])
     def return_wifi_data(ssid,pw):
-        print('********************************* post /')
-        
-        #if len(ssid) == 0 or len(pw) < 8:
-        #    print('********************************* post / errorinssid')
-        #    return process_html('errorinssid')
-        
-        print('********************************* post / before nmcli.device.wifi_connect(ssid,pw)')
+               
         try:
             nmcli.device.wifi_connect(urllib.parse.unquote_plus(ssid),urllib.parse.unquote_plus(pw))
         except:
-            pass #return process_html('errorinssid')
-        print('********************************* post / after nmcli.device.wifi_connect(ssid,pw)')
+            pass 
 
         time.sleep(10)
 
-        #return process_html('detailsstored')
-
     server.start(port=9090)
-
-
-
 
 # --------------- Main
 

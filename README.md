@@ -65,4 +65,4 @@ Guide [here](https://github.com/kavinaidoo/pmap/blob/main/docs/ICONS.md)
 ---
 
 ### Credits
-This project would not be possible without the contributors of it's numerous dependencies. A list can be found in [CREDITS](https://github.com/kavinaidoo/pmap/blob/main/docs/CREDITS.md).
+This project would not be possible without the contributors to it's numerous dependencies. A list can be found in [CREDITS](https://github.com/kavinaidoo/pmap/blob/main/docs/CREDITS.md).
