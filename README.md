@@ -14,7 +14,6 @@ PMAP is a battery-powered portable audio player built around the "[pHAT](https:/
 
 ---
 
-
 ### The Sandwich
 (Note, due to updates, UI may be different to the image below:)
 
