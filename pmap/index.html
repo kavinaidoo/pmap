@@ -37,13 +37,13 @@
             <div>
                 <label for="ssid">WiFi Name</label>
                 <br>
-                <select name="ssid" id="ssid">
+                <select name="ssid" id="ssid" minlength="1" required>
                 </select>
             </div>
             <div>
                 <label for="pw">Password</label>
                 <br>
-                <input name="pw" id="pw" type="password"/>
+                <input name="pw" id="pw" type="password" minlength="8" required/>
             </div>
             <div>
                 <button>Save</button>
@@ -51,26 +51,40 @@
         </form>
     </div>
     <br>
-    <div id = "detailsStored" style = "display:none">Details stored. You can now close this browser tab. Look at PMAP screen for status</div>
+    <div id = "detailsStored" style = "display:none">Details stored. You can now close this browser tab. Tap ⬅️ on pmap.</div>
     <div id = "noNetworksFound" style = "display:none">No WiFi Networks found, click back arrow in pmap and enter setup again to re-scan.</div>
+    <div id = "errorInSSIDorPW" style = "display:none">Error in SSID or Password, try again.</div>
 
     <script>
         function showConnecting(){
             document.getElementById("detailsStored").style = "display:block";
             document.getElementById("ssidpwForm").style = "display:none";
         }
-        submitButton = document.querySelector('button');
-        submitButton.addEventListener("click", showConnecting);
+        
+        document.getElementById("ssidpwForm").addEventListener("submit", showConnecting);
 
         ssidElement = document.getElementById("ssid");
         
         ssid_list = [];
 
+        status = '';
 
         if (ssid_list.length == 0){
             document.getElementById("ssidpwForm").style = "display:none";
             document.getElementById("noNetworksFound").style = "display:block";
         }
+
+        if (status == 'showDetailsStored'){
+            document.getElementById("detailsStored").style = "display:block";
+            document.getElementById("ssidpwForm").style = "display:none";
+            document.getElementById("noNetworksFound").style = "display:none";
+        }
+
+        if (status == 'showErrorInSSIDorPW'){
+            document.getElementById("errorInSSIDorPW").style = "display:block";
+        }
+
+
 
         for (x of ssid_list){
             insert = document.createElement("option");

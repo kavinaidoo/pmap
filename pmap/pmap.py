@@ -150,7 +150,7 @@ def a_pressed():
 
     if screen == "wifisetup":
         screen = "wifi"
-        #pmap_network.hotspot_off()
+        pmap_network.hotspot_off()
         pmap_network.setup_server_control('off')
     elif screen == "home":
         screen = "rotation"
@@ -223,7 +223,7 @@ def x_pressed():
         screen = "home"
     elif screen == "wifi":
         screen = "wifisetup"
-        #pmap_network.hotspot_on()
+        pmap_network.hotspot_on()
         pmap_network.setup_server_control('on')
 
     
@@ -639,7 +639,7 @@ while True:
             ...
 
     refresh_counter = refresh_counter + 1
-    if refresh_counter > 6: # two seconds if base refresh rate is 4fps
+    if refresh_counter > (16-2): # 4 seconds if base refresh rate is 4fps
         refresh_counter = 0
 
     time.sleep(0.25)   # Base refresh rate (4fps)
