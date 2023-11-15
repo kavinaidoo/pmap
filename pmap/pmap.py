@@ -491,7 +491,9 @@ def render_wifi_setup(): # Wifi Setup Screen
     draw_rotated_text(img, "\""+str(hostname)+"\"", (10, 75), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, "WiFi Network using:", (10, 100), 0, font_small, fill=(255, 255, 255))
     draw_rotated_text(img, "\""+str(hotspot_password)+"\"", (10, 125), 0, font_small, fill=(255, 255, 255))
-    draw_rotated_text(img, "as your password", (10, 150), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "as your password.", (10, 150), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "Then open a browser to:", (10, 175), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(hostname)+".local:9090"+"\"", (10, 200), 0, font_small, fill=(255, 255, 255))
 
     # Write buffer to display hardware, must be called to make things visible on the
     # display!
