@@ -33,6 +33,9 @@ import json
 # import for network connectivity
 import pmap_network
 
+# import for bluetooth connectivity
+import pmap_bluetooth
+
 # --------------- Global Variables
 
 battery_status = 1 #battery present
@@ -56,6 +59,7 @@ icon_batt_25 = "\uF243"
 icon_batt_0 = "\uF244"
 icon_airplay = "\uE814"
 icon_spotify = "\uF1BC"
+icon_bluetooth = "\uF294"
 icon_power = "\uE810"
 icon_plug = "\uF1E6"
 icon_left_arrow = "\uE806"
@@ -99,6 +103,8 @@ if renderer == "airplay":
     os.system('sudo shairport-sync &')
 elif renderer == "spotify":
     os.system('librespot --disable-audio-cache --disable-credential-cache -q -n "'+hostname+'" --device-type "audiodongle" -b 320 --initial-volume 20 --enable-volume-normalisation --autoplay &')
+elif renderer == "bluetooth":
+    pmap_bluetooth.bluetooth_playback_control("on")
 
 # initialize INA219
 try:
@@ -152,6 +158,9 @@ def a_pressed():
         screen = "wifi"
         pmap_network.hotspot_off()
         pmap_network.setup_server_control('off')
+    if screen == "bluetoothsetup":
+        screen = "bluetooth"
+        pmap_bluetooth.bluetooth_pairing_control("off")
     elif screen == "home":
         screen = "rotation"
     else:
@@ -163,16 +172,27 @@ def b_pressed():
     global config
     global renderer
 
-    if screen == "home" and renderer == "spotify":
+
+    if screen == "home" and renderer == "airplay": #if it's on airplay, switch to spotify
+        os.system('sudo pkill nqptp')
+        os.system('sudo pkill shairport-sync')
+        
+        os.system('librespot --disable-audio-cache --disable-credential-cache -q -n "headphones" --device-type "audiodongle" -b 320 --initial-volume 20 --enable-volume-normalisation --autoplay &')
+        renderer = "spotify"
+
+    elif screen == "home" and renderer == "spotify": # if it's on spotify, switch to bluetooth
         os.system('sudo pkill librespot')
+
+        pmap_bluetooth.bluetooth_playback_control("on")
+        renderer = "bluetooth"
+
+    elif screen == "home" and renderer == "bluetooth": # if it's on bluetooth, switch to airplay
+        pmap_bluetooth.bluetooth_playback_control("off")
+        
         os.system('sudo nqptp &')
         os.system('sudo shairport-sync &')
         renderer = "airplay"
-    elif screen == "home" and renderer == "airplay":
-        os.system('sudo pkill nqptp')
-        os.system('sudo pkill shairport-sync')
-        os.system('librespot --disable-audio-cache --disable-credential-cache -q -n "headphones" --device-type "audiodongle" -b 320 --initial-volume 20 --enable-volume-normalisation --autoplay &')
-        renderer = "spotify"
+
     elif screen == "power":
         screen = "shutdown"
         config['startup_renderer'] = renderer
@@ -186,6 +206,8 @@ def b_pressed():
     elif screen == "brightness":
         screen = "wifi"
     elif screen == "wifi":
+        screen = "bluetooth"
+    elif screen == "bluetooth":
         screen = "temperature"
     elif screen == "temperature":
         screen = "rotation"
@@ -225,9 +247,10 @@ def x_pressed():
         screen = "wifisetup"
         pmap_network.hotspot_on()
         pmap_network.setup_server_control('on')
+    elif screen == "bluetooth":
+        screen = "bluetoothsetup"
+        pmap_bluetooth.bluetooth_pairing_control("on")
 
-    
-        
 def y_pressed():
     global screen
     global rotation_icon_angle
@@ -319,6 +342,8 @@ def render_home(): # Home Screen
         draw_rotated_text(img, icon_airplay, (0, 200), 0, icons, fill=(255, 255, 255))
     elif renderer == "spotify":
         draw_rotated_text(img, icon_spotify, (0, 200), 0, icons, fill=(255, 255, 255))
+    elif renderer == "bluetooth":
+        draw_rotated_text(img, icon_bluetooth, (0, 200), 0, icons, fill=(255, 255, 255))
 
     if battery_status:
         # Top Right - Battery Icon
@@ -499,7 +524,6 @@ def render_wifi_setup(): # Wifi Setup Screen
     # display!
     disp.display(img)
 
-
 def render_shutdown(): # Shutdown Complete Screen
     
     # Clear the display to a black background.
@@ -612,6 +636,72 @@ def render_settings_brightness(): # Brightness Settings Screen
     # display!
     disp.display(img)
 
+def render_settings_bluetooth(): # Wifi Settings Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+    global wifi_local_ip
+    global wifi_network
+    global refresh_counter
+
+    if refresh_counter == 0:
+        wifi_local_ip = pmap_network.wifi_network_info()[0]
+        wifi_network = pmap_network.wifi_network_info()[1]
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+    # Top Right - Sliders Icon
+    draw_rotated_text(img, icon_sliders, (200, 0), 0, icons, fill=(255, 255, 255))
+    # Bottom Left - Down Icon
+    draw_rotated_text(img, icon_down_arrow, (0, 200), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Bluetooth", (40, 0), 0, font, fill=(255, 255, 255))
+
+    '''
+    draw_rotated_text(img, "WiFi Network:", (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(wifi_network)+"\"", (10, 75), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "IP Address:", (10, 100), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(wifi_local_ip)+"\"", (10, 125), 0, font_small, fill=(255, 255, 255))
+    '''
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
+
+def render_bluetooth_setup(): # Wifi Setup Screen
+    
+    # Clear the display to a black background.
+    img = Image.new('RGB', (WIDTH, HEIGHT), color=(0, 0, 0))
+    draw = ImageDraw.Draw(img)
+
+    # Refer to global font variables
+    global font 
+    global icons 
+
+    if len(hostname) < 8:
+        hotspot_password = hostname + (8-len(hostname))*"0"
+    else:
+        hotspot_password = hostname
+
+    # Top left - Back Icon
+    draw_rotated_text(img, icon_left_arrow, (0, 0), 0, icons, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "BT Pairing", (40, 0), 0, font, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "Connect to:", (10, 50), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "\""+str(hostname)+"\"", (10, 75), 0, font_small, fill=(255, 255, 255))
+    draw_rotated_text(img, "Bluetooth device:", (10, 100), 0, font_small, fill=(255, 255, 255))
+
+    draw_rotated_text(img, "\""+str(hostname)+"\"", (10, 75), 0, font_small, fill=(255, 255, 255))
+
+    # Write buffer to display hardware, must be called to make things visible on the
+    # display!
+    disp.display(img)
+
 # --------------- Main Loop
 
 
@@ -631,7 +721,11 @@ while True:
         case "wifi":
             render_settings_wifi()   # WiFi Settings Screen
         case "wifisetup":
-            render_wifi_setup()   # WiFi Settings Screen
+            render_wifi_setup()   # WiFi Setup Settings Screen
+        case "bluetooth":
+            render_settings_bluetooth()   # Bluetooth Settings Screen
+        case "bluetoothsetup":
+            render_bluetooth_setup()   # Bluetooth Setup Settings Screen
         case "shutdown":
             render_shutdown()   # Shutdown Complete Screen
         case "restart":

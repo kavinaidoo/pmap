@@ -93,6 +93,97 @@ echo "\033[0;36m\n**** Installation of raspotify completed ****\033[0m\n"
 
 # END raspotify installation ****************************************************
 
+
+
+<<COMMENTS
+
+######################### To build bluez-alsa (future)
+
+
+
+# BEGIN bluez-alsa installation ****************************************************
+# Install Steps have been replicated from -> https://github.com/arkq/bluez-alsa/wiki/Installation-from-source
+
+echo "\033[0;36m\n**** Installing bluez-alsa ****\033[0m\n"
+
+echo "\033[0;36m\n* Installing Requirements *\033[0m\n"
+
+# Debian/Raspberry Pi OS/Ubuntu
+apt-get -y install git automake build-essential libtool pkg-config python3-docutils
+apt-get -y install libasound2-dev libbluetooth-dev libdbus-1-dev libglib2.0-dev libsbc-dev
+
+apt-get -y installlibopenaptx-dev # aptx dependency
+
+echo "\033[0;36m\n* Cloning, making and installing bluez-alsa *\033[0m\n"
+
+cd /home/$real_user/
+git clone https://github.com/arkq/bluez-alsa.git
+cd /home/$real_user/bluez-alsa
+
+autoreconf --install --force
+
+mkdir /home/$real_user/bluez-alsa/build
+cd /home/$real_user/bluez-alsa/build
+
+../configure --with-libopenaptx # adding aptx for better audio on supported android devices
+
+make
+make install
+
+echo "\033[0;36m\n**** Installation of bluez-alsa completed ****\033[0m\n"
+
+# END bluez-alsa installation ****************************************************
+
+
+COMMENTS
+
+
+
+
+
+
+
+
+
+
+######################### What is actually installed now
+
+
+# BEGIN bluetooth installation ****************************************************
+
+echo "\033[0;36m\n**** Installing Bluetooth support ****\033[0m\n"
+
+apt-get -y install bluez-alsa-utils
+
+# disabling services. bluealsa will be called by user action
+
+sudo systemctl disable bluealsa.service
+sudo systemctl disable bluealsa-aplay.service
+
+apt-get -y install bluez-tools
+
+echo "\033[0;36m\n**** Installation of Bluetooth support completed ****\033[0m\n"
+
+# BEGIN bluetooth installation ****************************************************
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # BEGIN pmap installation ****************************************************
 
 echo "\033[0;36m\n**** Installing dependencies and downloading pmap ****\033[0m\n"
