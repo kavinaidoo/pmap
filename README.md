@@ -4,13 +4,20 @@ PMAP is a battery-powered portable audio player built around the "[pHAT](https:/
 
 ---
 
-### Features
+### Project Status
+PMAP is in active development and should be considered **alpha software**. PRs and [issues](https://github.com/kavinaidoo/pmap/issues) welcome.
+
+---
+
+### Implemented Features
 * Install script sets up config.txt and enables SPI and I2C.
 * Supports AirPlay 2 and Spotify Connect.
 * Control screen rotation and brightness, AirPlay 2/Spotify Connect, reboot and shutdown using screen and buttons.
 * Dynamic battery icon (shows charge level + charge status).
 * Settings for backlight, screen rotation and last used renderer persist across reboots.
 * Add WiFi networks easily via hotspot mode.
+
+In-development features can be found [here](https://github.com/kavinaidoo/pmap/issues?q=is%3Aissue+is%3Aopen+label%3Aenhancement).
 
 ---
 
@@ -51,7 +58,7 @@ Battery System (Optional)
 curl -sL https://raw.githubusercontent.com/kavinaidoo/pmap/main/install.sh | sudo sh
 ````
 4. At the end of the install, your screen should look similar to the one in the image above.
-5. Look at the [User Guide](https://github.com/kavinaidoo/pmap/blob/main/docs/USERGUIDE.md) for more instructions and information.
+5. Look at the [User Guide](https://github.com/kavinaidoo/pmap/blob/main/docs/USERGUIDE.md) for instructions and information.
 ---
 
 ### Icons
@@ -60,7 +67,7 @@ Guide [here](https://github.com/kavinaidoo/pmap/blob/main/docs/ICONS.md)
 ---
 
 ### Disclaimer
-**This project is in active development. The interface and features may change unexpectedly. Running any software or script is entirely at your own risk!**
+** If you choose to run any software or script from this repository, it's at your own risk. **
 
 ---
 
